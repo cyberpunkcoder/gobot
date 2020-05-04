@@ -1,9 +1,23 @@
 package main
 
-//Import the package for printing to console
-import "fmt"
+import (
+	"fmt"
+	"github.com/joho/godotenv"
+	"os"
+	//"github.com/bwmarrin/discordgo"
+)
+
+func init() {
+	err := godotenv.Load()
+
+	//Check if
+	if err != nil {
+		fmt.Println("Error loading .env file")
+	}
+
+	fmt.Println(os.Getenv("DISCORDTOKEN"))
+}
 
 func main() {
-	// Print to conssole.
-	fmt.Printf("Test\n")
+
 }
