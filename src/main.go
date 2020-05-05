@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/bwmarrin/discordgo"
-	"github.com/joho/godotenv"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/bwmarrin/discordgo"
+	"github.com/joho/godotenv"
 )
 
 func main() {
