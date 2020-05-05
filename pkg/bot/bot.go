@@ -1,4 +1,4 @@
-package main
+package bot
 
 import (
 	"fmt"
@@ -7,19 +7,12 @@ import (
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/joho/godotenv"
+	"github.com/cyberpunkprogrammer/gobot/pkg/config"
 )
 
-func main() {
-	err := godotenv.Load()
+func Run() {
 
-	// Check if .env file exists
-	if err != nil {
-		fmt.Println("Error loading .env file, ", err)
-		return
-	}
-
-	discord, err := discordgo.New("Bot " + os.Getenv("DISCORDTOKEN"))
+	discord, err := discordgo.New("Bot " + config.DiscordToken)
 
 	// Check if Discord session was created
 	if err != nil {
@@ -47,16 +40,14 @@ func main() {
 	discord.Close()
 }
 
-/* This function will be called (due to AddHandler above) every time the bot
-sucessfully logs in. */
+// This function will be called (due to AddHandler above) every time the bot sucessfully logs in
 func ready(s *discordgo.Session, r *discordgo.Ready) {
 
 	// Display name of bot to user after login successful
 	fmt.Println("Logged in as", s.State.User, "Press CTRL-C to exit")
 }
 
-/* This function will be called (due to AddHandler above) every time a new
-message is created on any channel that the autenticated bot has access to. */
+// This function will be called (due to AddHandler above) every time a new message is created on any channel that the autenticated bot has access to
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	// Ignore all messages created by the bot itself
