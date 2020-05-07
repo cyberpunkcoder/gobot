@@ -56,16 +56,24 @@ func messageCreate(session *discordgo.Session, message *discordgo.MessageCreate)
 
 	if strings.HasPrefix(message.Content, config.CommandPrefix) {
 
-		commandText := message.Content[1:]
-		fmt.Println(commandText)
+		// Get keyword fom message text by removing CommandPrefix and everything after first space
+		keyword := strings.Replace(message.Content, config.CommandPrefix, "", -1)
+		keyword = strings.Split(keyword, " ")[0]
 
 		// Ignore all messages created by the bot itself
 		if message.Author.ID == session.State.User.ID {
 			return
 		}
 
-		if commandText == "hello" {
+		switch keyword {
+		case "hello":
 			command.Hello(session, message)
+		case "kick":
+			command.Kick(session, message)
+		case "ban":
+			command.Ban(session, message)
+		default:
+			command.Unknown(session, message, keyword)
 		}
 	}
 }
