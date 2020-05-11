@@ -72,6 +72,8 @@ func messageCreate(session *discordgo.Session, message *discordgo.MessageCreate)
 			command.Kick(session, message)
 		case "ban":
 			command.Ban(session, message)
+		case "purge":
+			command.Purge(session, message)
 		default:
 			command.Unknown(session, message, keyword)
 		}
