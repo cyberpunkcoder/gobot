@@ -2,8 +2,8 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
+	"log"
 )
 
 var (
@@ -28,19 +28,19 @@ type configStruct struct {
 
 // ReadConfig read and load the config.json file from config directory in root of the project
 func ReadConfig() error {
-	fmt.Println("Reading config file")
+	log.Println("Reading config file")
 
 	file, err := ioutil.ReadFile("../../config/config.json")
 
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return err
 	}
 
 	err = json.Unmarshal(file, &config)
 
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		return err
 	}
 

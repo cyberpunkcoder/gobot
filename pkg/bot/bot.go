@@ -1,7 +1,7 @@
 package bot
 
 import (
-	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"strings"
@@ -20,7 +20,7 @@ func Start() {
 
 	// Check if bot was created
 	if err != nil {
-		fmt.Println("Error creating Discord session,", err)
+		log.Println("Error creating Discord session,", err)
 		return
 	}
 
@@ -33,7 +33,7 @@ func Start() {
 
 	// Check if Discord connection was made
 	if err != nil {
-		fmt.Println("Error opening Discord connection,", err)
+		log.Println("Error opening Discord connection,", err)
 		return
 	}
 
@@ -50,7 +50,7 @@ func Start() {
 func ready(session *discordgo.Session, ready *discordgo.Ready) {
 
 	// Display name of bot to user
-	fmt.Println("Logged in as", session.State.User, "Press CTRL-C to exit")
+	log.Println("Logged in as", session.State.User, "press CTRL-C to exit")
 }
 
 // guildMemberAdd is called when a member joins the guild
