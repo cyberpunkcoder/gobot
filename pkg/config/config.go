@@ -26,9 +26,9 @@ type configStruct struct {
 	JoinRole      string `json:"JoinRole"`
 }
 
-// ReadConfig read and load the config.json file from config directory in root of the project
-func ReadConfig() error {
-	log.Println("Reading config file")
+// LoadConfig read and load the config.json file from config directory in root of the project
+func LoadConfig() error {
+	log.Println("Loading config")
 
 	file, err := ioutil.ReadFile("../../config/config.json")
 
