@@ -9,13 +9,8 @@ import (
 // Kick all users mentioned in commandMessage from guild
 func Kick(session *discordgo.Session, commandMessage *discordgo.MessageCreate) {
 
-	// Command author
 	author := commandMessage.Author.ID
-
-	// All users mentioned in command
 	mentionedMembers := commandMessage.Mentions
-
-	// Channel command was sent in
 	commandChannel := commandMessage.ChannelID
 
 	// Command author permissions
@@ -58,21 +53,20 @@ func Kick(session *discordgo.Session, commandMessage *discordgo.MessageCreate) {
 
 	// Kick all mentioned users
 	for _, member := range mentionedMembers {
-		session.ChannelMessageSend(commandChannel, "<@"+member.ID+"> was kicked.")
-		session.GuildMemberDelete(commandMessage.GuildID, member.ID)
+		if member.ID == author {
+			session.ChannelMessageSend(commandChannel, "<@"+member.ID+"> you cannot kick yourself.")
+		} else {
+			session.ChannelMessageSend(commandChannel, "<@"+member.ID+"> was kicked.")
+			session.GuildMemberDelete(commandMessage.GuildID, member.ID)
+		}
 	}
 }
 
 // Ban all users mentioned in commandMessage from guild
 func Ban(session *discordgo.Session, commandMessage *discordgo.MessageCreate) {
 
-	// Command author
 	author := commandMessage.Author.ID
-
-	/// All users mentioned in command
 	mentionedMembers := commandMessage.Mentions
-
-	// Channel command was sent in
 	commandChannel := commandMessage.ChannelID
 
 	// Command author permissions
@@ -115,21 +109,20 @@ func Ban(session *discordgo.Session, commandMessage *discordgo.MessageCreate) {
 
 	// Ban all mentioned users
 	for _, member := range mentionedMembers {
-		session.ChannelMessageSend(commandChannel, "<@"+member.ID+"> was banned.")
-		session.GuildBanCreate(commandMessage.GuildID, member.ID, 0)
+		if member.ID == author {
+			session.ChannelMessageSend(commandChannel, "<@"+member.ID+"> you cannot ban yourself.")
+		} else {
+			session.ChannelMessageSend(commandChannel, "<@"+member.ID+"> was banned.")
+			session.GuildBanCreate(commandMessage.GuildID, member.ID, 0)
+		}
 	}
 }
 
 // Purge (remove) last 100 messages from the chat or any mentioned user
 func Purge(session *discordgo.Session, commandMessage *discordgo.MessageCreate) {
 
-	// Command author
 	author := commandMessage.Author.ID
-
-	// All users mentioned in command
 	mentionedMembers := commandMessage.Mentions
-
-	// Channel command was sent in
 	commandChannel := commandMessage.ChannelID
 
 	// Author permissions
