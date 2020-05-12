@@ -13,6 +13,9 @@ var (
 	// CommandPrefix character to represent the beginning of a bot command
 	CommandPrefix string
 
+	// JoinRole role members are given after joining guild
+	JoinRole string
+
 	// Private variables
 	config *configStruct
 )
@@ -20,11 +23,12 @@ var (
 type configStruct struct {
 	DiscordToken  string `json:"DiscordToken"`
 	CommandPrefix string `json:"CommandPrefix"`
+	JoinRole      string `json:"JoinRole"`
 }
 
 // ReadConfig read and load the config.json file from config directory in root of the project
 func ReadConfig() error {
-	fmt.Println("Reading config file...")
+	fmt.Println("Reading config file")
 
 	file, err := ioutil.ReadFile("../../config/config.json")
 
@@ -32,8 +36,6 @@ func ReadConfig() error {
 		fmt.Println(err.Error())
 		return err
 	}
-
-	fmt.Println(string(file))
 
 	err = json.Unmarshal(file, &config)
 
@@ -44,6 +46,7 @@ func ReadConfig() error {
 
 	DiscordToken = config.DiscordToken
 	CommandPrefix = config.CommandPrefix
+	JoinRole = config.JoinRole
 
 	return nil
 }

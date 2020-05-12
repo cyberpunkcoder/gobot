@@ -24,7 +24,9 @@ func Start() {
 		return
 	}
 
+	// Sever events
 	botSession.AddHandler(ready)
+	botSession.AddHandler(guildMemberAdd)
 	botSession.AddHandler(messageCreate)
 
 	err = botSession.Open()
@@ -49,6 +51,11 @@ func ready(session *discordgo.Session, ready *discordgo.Ready) {
 
 	// Display name of bot to user
 	fmt.Println("Logged in as", session.State.User, "Press CTRL-C to exit")
+}
+
+// guildMemberAdd is called when a member joins the guild
+func guildMemberAdd(session *discordgo.Session, user *discordgo.GuildMemberAdd) {
+	session.GuildMemberRoleAdd(user.GuildID, user.User.ID, config.JoinRole)
 }
 
 // messageCreate is called whenever a message has been created

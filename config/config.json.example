@@ -2,4 +2,5 @@
 {
     "DiscordToken": "Insert Discord api bot token here",
     "CommandPrefix": "!"
+    "JoinRole": "Insert role ID for new users here"
 }
