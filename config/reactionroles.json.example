@@ -1,4 +1,14 @@
-[
-    { "id": "Insert role ID here", "emoji": "Insert reaction emoji here"},
-    { "id": "Insert role ID here", "emoji": "Insert reaction emoji here"}
-]
+{
+    catagory: "Catagory name here",
+    "roles" :
+    [
+        {
+            "id": "Role ID here", 
+            "emoji": "Emoji ID here"
+        },
+        {
+            "id": "Role ID here", 
+            "emoji": "Emoji ID here""
+        }
+    ]
+}

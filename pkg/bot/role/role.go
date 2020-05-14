@@ -1,4 +1,4 @@
-package bot
+package role
 
 import (
 	"encoding/json"
@@ -6,14 +6,17 @@ import (
 	"log"
 )
 
-// ReactionRoles are roles that users obtain by reacting to a message
+// ReactionRoleCatagories catagories, and nameid emojiid relation for each reaction role
 var (
-	ReactionRoles []reactionRole
+	ReactionRoleCatagories reactionRoleCatagories
 )
 
-type reactionRole struct {
-	ID    string `json:"id"`
-	Emoji string `json:"emoji"`
+type reactionRoleCatagories []struct {
+	Name string `json:"name"`
+	Role []struct {
+		RoleID  string `json:"roleid"`
+		EmojiID string `json:"emojiid"`
+	} `json:"role"`
 }
 
 // LoadReactionRoles loads roles and their associated emoji from reactionroles.json
@@ -29,7 +32,7 @@ func LoadReactionRoles() error {
 		return err
 	}
 
-	err = json.Unmarshal(file, &ReactionRoles)
+	err = json.Unmarshal(file, &ReactionRoleCatagories)
 
 	// Return if there was an error unmarshaling reactionrroles.json
 	if err != nil {
