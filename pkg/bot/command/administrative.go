@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/cyberpunkprogrammer/gobot/pkg/bot/role"
 )
 
 // Kick all users mentioned in commandMessage from guild
@@ -184,5 +185,23 @@ func Purge(session *discordgo.Session, commandMessage *discordgo.MessageCreate) 
 				}
 			}
 		}
+	}
+}
+
+// Roles creates a menu for users to choose roles by reaction
+func Roles(session *discordgo.Session, commandMessage *discordgo.MessageCreate) {
+
+	for _, catagory := range role.ReactionRoleCatagories {
+
+		output := "**" + catagory.Name + "**\n"
+		output += "*React to give yourself a role.*\n"
+		output += ">>> "
+
+		for _, role := range catagory.Role {
+			emoji, _ := session.State.Emoji(commandMessage.GuildID, role.EmojiID)
+			output += "<:" + emoji.Name + ":" + role.EmojiID + "> - <@&" + role.RoleID + ">\n"
+		}
+
+		session.ChannelMessageSend(commandMessage.ChannelID, output)
 	}
 }
