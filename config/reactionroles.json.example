@@ -1,4 +1,21 @@
+<<<<<<< HEAD
 [
     { "id": "Insert role ID here", "emoji": "Insert reaction emoji here"},
     { "id": "Insert role ID here", "emoji": "Insert reaction emoji here"}
 ]
+=======
+{
+    catagory: "Catagory name here",
+    "roles" :
+    [
+        {
+            "id": "Role ID here", 
+            "emoji": "Emoji ID here"
+        },
+        {
+            "id": "Role ID here", 
+            "emoji": "Emoji ID here""
+        }
+    ]
+}
+>>>>>>> 966c18fce780f4ff09ed19326f064994d2bce5b2
