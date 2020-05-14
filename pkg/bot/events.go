@@ -44,6 +44,8 @@ func messageCreate(session *discordgo.Session, message *discordgo.MessageCreate)
 			command.Ban(session, message)
 		case "purge":
 			command.Purge(session, message)
+		case "roles":
+			command.Roles(session, message)
 		default:
 			command.Unknown(session, message, keyword)
 		}
