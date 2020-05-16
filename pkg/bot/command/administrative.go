@@ -27,7 +27,7 @@ func Kick(session *discordgo.Session, commandMessage *discordgo.MessageCreate) {
 		return
 	}
 
-	// Return if unable to check command author permissions
+	// Return if bot does not have permission to kick
 	if botPermissions&discordgo.PermissionKickMembers == 0 {
 		session.ChannelMessageSend(commandChannel, "<@"+author+"> I don't have permission to kick.")
 		return
@@ -191,6 +191,53 @@ func Purge(session *discordgo.Session, commandMessage *discordgo.MessageCreate) 
 // Roles creates a menu for users to choose roles by reaction
 func Roles(session *discordgo.Session, commandMessage *discordgo.MessageCreate) {
 
+	author := commandMessage.Author.ID
+	commandChannel := commandMessage.ChannelID
+
+	// Bot permissions
+	botPermissions, err := session.State.UserChannelPermissions(session.State.User.ID, commandChannel)
+
+	// Return if unable to check bot permissions
+	if err != nil {
+		log.Println(err)
+		session.ChannelMessageSend(commandChannel, "<@"+author+"> unable to check my permissions.")
+		return
+	}
+
+	// Return if unable to add reactions
+	if botPermissions&discordgo.PermissionAddReactions == 0 {
+		session.ChannelMessageSend(commandChannel, "<@"+author+"> I don't have permission to add reactions.")
+		return
+	}
+
+	// Return if bot does not have permission to manage roles
+	if botPermissions&discordgo.PermissionManageRoles == 0 {
+		session.ChannelMessageSend(commandChannel, "<@"+author+"> I don't have permission to manage roles.")
+		return
+	}
+
+	// Command author permissions
+	permissions, err := session.State.UserChannelPermissions(author, commandChannel)
+
+	// Return if unable to check author permissions
+	if err != nil {
+		log.Println(err)
+		session.ChannelMessageSend(commandChannel, "<@"+author+"> unable to check your permissions.")
+		return
+	}
+
+	// Return if author does not have permission to add reactions
+	if permissions&discordgo.PermissionAddReactions == 0 {
+		session.ChannelMessageSend(commandChannel, "<@"+author+"> you don't have permission to add reactions.")
+		return
+	}
+
+	// Return if author does not have permission to manage roles
+	if permissions&discordgo.PermissionManageRoles == 0 {
+		session.ChannelMessageSend(commandChannel, "<@"+author+"> you don't have permission to manage roles.")
+		return
+	}
+
 	for _, catagory := range role.ReactionRoleCatagories {
 
 		output := "**" + catagory.Name + "**\n"
@@ -199,9 +246,28 @@ func Roles(session *discordgo.Session, commandMessage *discordgo.MessageCreate) 
 
 		for _, role := range catagory.Role {
 			emoji, _ := session.State.Emoji(commandMessage.GuildID, role.EmojiID)
-			output += "<:" + emoji.Name + ":" + role.EmojiID + "> - <@&" + role.RoleID + ">\n"
+			output += "<:" + emoji.APIName() + "> - <@&" + role.RoleID + ">\n"
 		}
 
-		session.ChannelMessageSend(commandMessage.ChannelID, output)
+		msg, err := session.ChannelMessageSend(commandMessage.ChannelID, output)
+
+		// Return if unable to create message
+		if err != nil {
+			log.Println(err)
+			session.ChannelMessageSend(commandChannel, "<@"+author+"> unable to create message.")
+			return
+		}
+
+		for _, role := range catagory.Role {
+
+			emoji, _ := session.State.Emoji(commandMessage.GuildID, role.EmojiID)
+			err := session.MessageReactionAdd(commandChannel, msg.ID, emoji.APIName())
+
+			// Return if unable to create message
+			if err != nil {
+				log.Println(err)
+				return
+			}
+		}
 	}
 }

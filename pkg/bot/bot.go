@@ -7,10 +7,7 @@ import (
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
-<<<<<<< HEAD
-=======
 	"github.com/cyberpunkprogrammer/gobot/pkg/bot/role"
->>>>>>> 966c18fce780f4ff09ed19326f064994d2bce5b2
 	"github.com/cyberpunkprogrammer/gobot/pkg/config"
 )
 
@@ -18,11 +15,7 @@ import (
 func Start() {
 
 	// Load roles assigned by reaction
-<<<<<<< HEAD
-	err := LoadReactionRoles()
-=======
 	err := role.LoadReactionRoles()
->>>>>>> 966c18fce780f4ff09ed19326f064994d2bce5b2
 
 	// Check if roles loaded
 	if err != nil {
