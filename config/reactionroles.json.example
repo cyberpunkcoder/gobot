@@ -1,21 +1,27 @@
-<<<<<<< HEAD
+
 [
-    { "id": "Insert role ID here", "emoji": "Insert reaction emoji here"},
-    { "id": "Insert role ID here", "emoji": "Insert reaction emoji here"}
-]
-=======
-{
-    catagory: "Catagory name here",
-    "roles" :
+    "name": "Catagory name here",
+    "role":
     [
         {
-            "id": "Role ID here", 
-            "emoji": "Emoji ID here"
+            "roleid": "Role ID here", 
+            "emojiid": "Emoji ID here"
         },
         {
-            "id": "Role ID here", 
-            "emoji": "Emoji ID here""
+            "roleid": "Role ID here", 
+            "emojiid": "Emoji ID here""
+        }
+    ], 
+    "name": "Catagory name here",
+    "role":
+    [
+        {
+            "roleeid": "Role ID here", 
+            "emojiid": "Emoji ID here"
+        },
+        {
+            "roleeid": "Role ID here", 
+            "emojiid": "Emoji ID here""
         }
     ]
 }
->>>>>>> 966c18fce780f4ff09ed19326f064994d2bce5b2
