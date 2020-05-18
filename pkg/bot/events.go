@@ -6,6 +6,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/cyberpunkprogrammer/gobot/pkg/bot/command"
+	"github.com/cyberpunkprogrammer/gobot/pkg/bot/role"
 	"github.com/cyberpunkprogrammer/gobot/pkg/config"
 )
 
@@ -48,6 +49,68 @@ func messageCreate(session *discordgo.Session, message *discordgo.MessageCreate)
 			command.Roles(session, message)
 		default:
 			command.Unknown(session, message, keyword)
+		}
+	}
+}
+
+// messageReactionAdd is called whenever a reaction has been added to a message
+func messageReactionAdd(session *discordgo.Session, reaction *discordgo.MessageReactionAdd) {
+
+	// Bot permissions
+	botPermissions, err := session.State.UserChannelPermissions(session.State.User.ID, reaction.ChannelID)
+
+	// Return if unable to check bot permissions
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	// Return if bot does not have permission to manage roles
+	if botPermissions&discordgo.PermissionManageRoles == 0 {
+		log.Println("Insufficient permission to manage roles.")
+		return
+	}
+
+	for _, reactionRoleMessage := range role.ReactionRoleMessages {
+		if reaction.MessageID == reactionRoleMessage {
+			for _, reactionRoleCatagory := range role.ReactionRoleCatagories {
+				for _, reactionRole := range reactionRoleCatagory.Role {
+					if reactionRole.EmojiID == reaction.Emoji.ID {
+						session.GuildMemberRoleAdd(reaction.GuildID, reaction.UserID, reactionRole.RoleID)
+					}
+				}
+			}
+		}
+	}
+}
+
+// messageReactionAdd is called whenever a reaction has been added to a message
+func messageReactionRemove(session *discordgo.Session, reaction *discordgo.MessageReactionRemove) {
+
+	// Bot permissions
+	botPermissions, err := session.State.UserChannelPermissions(session.State.User.ID, reaction.ChannelID)
+
+	// Return if unable to check bot permissions
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	// Return if bot does not have permission to manage roles
+	if botPermissions&discordgo.PermissionManageRoles == 0 {
+		log.Println("Insufficient permission to manage roles.")
+		return
+	}
+
+	for _, reactionRoleMessage := range role.ReactionRoleMessages {
+		if reaction.MessageID == reactionRoleMessage {
+			for _, reactionRoleCatagory := range role.ReactionRoleCatagories {
+				for _, reactionRole := range reactionRoleCatagory.Role {
+					if reactionRole.EmojiID == reaction.Emoji.ID {
+						session.GuildMemberRoleRemove(reaction.GuildID, reaction.UserID, reactionRole.RoleID)
+					}
+				}
+			}
 		}
 	}
 }
