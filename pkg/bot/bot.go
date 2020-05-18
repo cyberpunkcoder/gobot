@@ -7,21 +7,11 @@ import (
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/cyberpunkprogrammer/gobot/pkg/bot/role"
 	"github.com/cyberpunkprogrammer/gobot/pkg/config"
 )
 
 // Start the Discord bot
 func Start() {
-
-	// Load roles assigned by reaction
-	err := role.LoadReactionRoles()
-
-	// Check if roles loaded
-	if err != nil {
-		log.Println("Error loading reaction roles,", err)
-		return
-	}
 
 	// Create new bot session
 	botSession, err := discordgo.New("Bot " + config.DiscordToken)
@@ -36,6 +26,8 @@ func Start() {
 	botSession.AddHandler(ready)
 	botSession.AddHandler(guildMemberAdd)
 	botSession.AddHandler(messageCreate)
+	botSession.AddHandler(messageReactionAdd)
+	botSession.AddHandler(messageReactionRemove)
 
 	err = botSession.Open()
 

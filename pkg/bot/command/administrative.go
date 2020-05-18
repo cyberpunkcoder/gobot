@@ -14,9 +14,6 @@ func Kick(session *discordgo.Session, commandMessage *discordgo.MessageCreate) {
 	mentionedMembers := commandMessage.Mentions
 	commandChannel := commandMessage.ChannelID
 
-	// Command author permissions
-	permissions, err := session.State.UserChannelPermissions(author, commandChannel)
-
 	// Bot permissions
 	botPermissions, err := session.State.UserChannelPermissions(session.State.User.ID, commandChannel)
 
@@ -32,6 +29,9 @@ func Kick(session *discordgo.Session, commandMessage *discordgo.MessageCreate) {
 		session.ChannelMessageSend(commandChannel, "<@"+author+"> I don't have permission to kick.")
 		return
 	}
+
+	// Command author permissions
+	permissions, err := session.State.UserChannelPermissions(author, commandChannel)
 
 	// Return if unable to check command author permissions
 	if err != nil {
@@ -70,9 +70,6 @@ func Ban(session *discordgo.Session, commandMessage *discordgo.MessageCreate) {
 	mentionedMembers := commandMessage.Mentions
 	commandChannel := commandMessage.ChannelID
 
-	// Command author permissions
-	permissions, err := session.State.UserChannelPermissions(author, commandChannel)
-
 	// Bot permissions
 	botPermissions, err := session.State.UserChannelPermissions(session.State.User.ID, commandChannel)
 
@@ -88,6 +85,9 @@ func Ban(session *discordgo.Session, commandMessage *discordgo.MessageCreate) {
 		session.ChannelMessageSend(commandChannel, "<@"+author+"> I don't have permission to ban.")
 		return
 	}
+
+	// Command author permissions
+	permissions, err := session.State.UserChannelPermissions(author, commandChannel)
 
 	// Return if unable to check command author permissions
 	if err != nil {
@@ -126,9 +126,6 @@ func Purge(session *discordgo.Session, commandMessage *discordgo.MessageCreate) 
 	mentionedMembers := commandMessage.Mentions
 	commandChannel := commandMessage.ChannelID
 
-	// Author permissions
-	permissions, err := session.State.UserChannelPermissions(author, commandChannel)
-
 	// Bot permissions
 	botPermissions, err := session.State.UserChannelPermissions(session.State.User.ID, commandChannel)
 
@@ -147,6 +144,9 @@ func Purge(session *discordgo.Session, commandMessage *discordgo.MessageCreate) 
 		session.ChannelMessageSend(commandChannel, "<@"+author+"> I don't have permission to delete messages.")
 		return
 	}
+
+	// Author permissions
+	permissions, err := session.State.UserChannelPermissions(author, commandChannel)
 
 	// Return if unable to check command author permissions
 	if err != nil {
@@ -194,6 +194,9 @@ func Roles(session *discordgo.Session, commandMessage *discordgo.MessageCreate) 
 	author := commandMessage.Author.ID
 	commandChannel := commandMessage.ChannelID
 
+	// Remove command messaage
+	session.ChannelMessageDelete(commandChannel, commandMessage.ID)
+
 	// Bot permissions
 	botPermissions, err := session.State.UserChannelPermissions(session.State.User.ID, commandChannel)
 
@@ -204,7 +207,7 @@ func Roles(session *discordgo.Session, commandMessage *discordgo.MessageCreate) 
 		return
 	}
 
-	// Return if unable to add reactions
+	// Return if bot does not have permission to add reaction
 	if botPermissions&discordgo.PermissionAddReactions == 0 {
 		session.ChannelMessageSend(commandChannel, "<@"+author+"> I don't have permission to add reactions.")
 		return
@@ -258,12 +261,15 @@ func Roles(session *discordgo.Session, commandMessage *discordgo.MessageCreate) 
 			return
 		}
 
+		// Save ID of the reaction role to reactionrolemessages.json to check for reactions later
+		role.SaveReactionRoleMessage(msg.ID)
+
 		for _, role := range catagory.Role {
 
 			emoji, _ := session.State.Emoji(commandMessage.GuildID, role.EmojiID)
 			err := session.MessageReactionAdd(commandChannel, msg.ID, emoji.APIName())
 
-			// Return if unable to create message
+			// Return if unable to create reaction
 			if err != nil {
 				log.Println(err)
 				return
