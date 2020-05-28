@@ -5,8 +5,8 @@ import (
 	"log"
 
 	"github.com/cyberpunkprogrammer/gobot/pkg/bot"
-	"github.com/cyberpunkprogrammer/gobot/pkg/bot/role"
-	"github.com/cyberpunkprogrammer/gobot/pkg/config"
+	"github.com/cyberpunkprogrammer/gobot/pkg/bot/config"
+	"github.com/cyberpunkprogrammer/gobot/pkg/bot/reactionrole"
 )
 
 func main() {
@@ -21,7 +21,7 @@ func main() {
 	}
 
 	// Load roles assigned by reaction
-	err = role.LoadReactionRoles()
+	err = reactionrole.LoadRoles()
 
 	// Return if error loading reactionrroles.json
 	if err != nil {
@@ -30,7 +30,7 @@ func main() {
 	}
 
 	// Load roles assigned by reaction
-	err = role.LoadReactionRoleMessages()
+	err = reactionrole.LoadMessages()
 
 	// Return if error loading reactionrroles.json
 	if err != nil {

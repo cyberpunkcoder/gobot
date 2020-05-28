@@ -6,8 +6,8 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/cyberpunkprogrammer/gobot/pkg/bot/command"
-	"github.com/cyberpunkprogrammer/gobot/pkg/bot/role"
-	"github.com/cyberpunkprogrammer/gobot/pkg/config"
+	"github.com/cyberpunkprogrammer/gobot/pkg/bot/config"
+	"github.com/cyberpunkprogrammer/gobot/pkg/bot/reactionrole"
 )
 
 // ready is called whenever the bot has successfully logged in
@@ -47,6 +47,10 @@ func messageCreate(session *discordgo.Session, message *discordgo.MessageCreate)
 			command.Purge(session, message)
 		case "roles":
 			command.Roles(session, message)
+		case "addrole":
+			command.AddRole(session, message)
+		case "removerole":
+			command.RemoveRole(session, message)
 		default:
 			command.Unknown(session, message, keyword)
 		}
@@ -71,12 +75,12 @@ func messageReactionAdd(session *discordgo.Session, reaction *discordgo.MessageR
 		return
 	}
 
-	for _, reactionRoleMessage := range role.ReactionRoleMessages {
+	for _, reactionRoleMessage := range reactionrole.Messages {
 		if reaction.MessageID == reactionRoleMessage {
-			for _, reactionRoleCatagory := range role.ReactionRoleCatagories {
+			for _, reactionRoleCatagory := range reactionrole.Catagories {
 				for _, reactionRole := range reactionRoleCatagory.Role {
-					if reactionRole.EmojiID == reaction.Emoji.ID {
-						session.GuildMemberRoleAdd(reaction.GuildID, reaction.UserID, reactionRole.RoleID)
+					if reactionRole.Emoji.ID == reaction.Emoji.ID {
+						session.GuildMemberRoleAdd(reaction.GuildID, reaction.UserID, reactionRole.ID)
 					}
 				}
 			}
@@ -102,12 +106,12 @@ func messageReactionRemove(session *discordgo.Session, reaction *discordgo.Messa
 		return
 	}
 
-	for _, reactionRoleMessage := range role.ReactionRoleMessages {
+	for _, reactionRoleMessage := range reactionrole.Messages {
 		if reaction.MessageID == reactionRoleMessage {
-			for _, reactionRoleCatagory := range role.ReactionRoleCatagories {
+			for _, reactionRoleCatagory := range reactionrole.Catagories {
 				for _, reactionRole := range reactionRoleCatagory.Role {
-					if reactionRole.EmojiID == reaction.Emoji.ID {
-						session.GuildMemberRoleRemove(reaction.GuildID, reaction.UserID, reactionRole.RoleID)
+					if reactionRole.Emoji.ID == reaction.Emoji.ID {
+						session.GuildMemberRoleRemove(reaction.GuildID, reaction.UserID, reactionRole.ID)
 					}
 				}
 			}
