@@ -26,11 +26,11 @@ type configStruct struct {
 	JoinRole      string `json:"JoinRole"`
 }
 
-// LoadConfig read and load the config.json file from /config
+// LoadConfig read and load the config.json file
 func LoadConfig() error {
 	log.Println("Loading config")
 
-	file, err := ioutil.ReadFile("../../config/config.json")
+	file, err := ioutil.ReadFile("../../json/config.json")
 
 	if err != nil {
 		log.Println(err.Error())

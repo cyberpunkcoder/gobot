@@ -1,3 +1,3 @@
-config/config.json
-config/reactionroles.json
-config/reactionrolemessages.json
+json/config.json
+json/role/reactionroles.json
+json/role/reactionrolemessages.json

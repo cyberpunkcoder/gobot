@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/cyberpunkprogrammer/gobot/pkg/bot/role"
+	"github.com/cyberpunkprogrammer/gobot/pkg/bot/reactionrole"
 )
 
 // Roles creates a menu for users to choose roles by reaction
@@ -60,15 +60,16 @@ func Roles(session *discordgo.Session, commandMessage *discordgo.MessageCreate) 
 		return
 	}
 
-	for _, catagory := range role.ReactionRoleCatagories {
+	for _, catagory := range reactionrole.Catagories {
 
 		output := "**" + catagory.Name + "**\n"
 		output += "*React to give yourself a role.*\n"
 		output += ">>> "
 
 		for _, role := range catagory.Role {
-			emoji, _ := session.State.Emoji(commandMessage.GuildID, role.EmojiID)
-			output += "<:" + emoji.APIName() + "> - <@&" + role.RoleID + ">\n"
+
+			emoji, _ := session.State.Emoji(commandMessage.GuildID, role.Emoji.ID)
+			output += "<:" + emoji.APIName() + "> - <@&" + role.ID + ">\n"
 		}
 
 		msg, err := session.ChannelMessageSend(commandMessage.ChannelID, output)
@@ -80,12 +81,13 @@ func Roles(session *discordgo.Session, commandMessage *discordgo.MessageCreate) 
 			return
 		}
 
-		// Save ID of the reaction role to reactionrolemessages.json to check for reactions later
-		role.SaveReactionRoleMessage(msg.ID)
+		reactionrole.SaveMessage(msg.ID)
 
 		for _, role := range catagory.Role {
 
-			emoji, _ := session.State.Emoji(commandMessage.GuildID, role.EmojiID)
+			// Save ID of the reaction role to reactionrolemessages.json to check for reactions later
+
+			emoji, _ := session.State.Emoji(commandMessage.GuildID, role.Emoji.ID)
 			err := session.MessageReactionAdd(commandChannel, msg.ID, emoji.APIName())
 
 			// Return if unable to create reaction
@@ -95,4 +97,25 @@ func Roles(session *discordgo.Session, commandMessage *discordgo.MessageCreate) 
 			}
 		}
 	}
+}
+
+// AddRole adds a role to the reaction role menu
+func AddRole(session *discordgo.Session, message *discordgo.MessageCreate) {
+
+	newRole := reactionrole.Role{
+		ID: "testID2",
+		Emoji: reactionrole.Emoji{
+			Prefix: "a",
+			Name:   "testName",
+			ID:     "testID",
+		},
+	}
+
+	reactionrole.SaveRole("testCatagory", newRole)
+}
+
+// RemoveRole adds a role to the reaction role menu
+func RemoveRole(session *discordgo.Session, message *discordgo.MessageCreate) {
+	// TODO Addrole function
+
 }

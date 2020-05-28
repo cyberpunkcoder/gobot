@@ -4,6 +4,11 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// Help returns the usage of all commands avaliable to the command author
+func Help(session *discordgo.Session, message *discordgo.MessageCreate) {
+	// TODO write help function
+}
+
 // Hello messages "Hello!" in the chat
 func Hello(session *discordgo.Session, message *discordgo.MessageCreate) {
 	session.ChannelMessageSend(message.ChannelID, "<@"+message.Author.ID+"> hello!")

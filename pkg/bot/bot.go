@@ -7,7 +7,7 @@ import (
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/cyberpunkprogrammer/gobot/pkg/config"
+	"github.com/cyberpunkprogrammer/gobot/pkg/bot/config"
 )
 
 // Start the Discord bot
