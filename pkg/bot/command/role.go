@@ -2,6 +2,7 @@ package command
 
 import (
 	"log"
+	"regexp"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/cyberpunkprogrammer/gobot/pkg/bot/reactionrole"
@@ -101,6 +102,8 @@ func Roles(session *discordgo.Session, commandMessage *discordgo.MessageCreate) 
 
 // AddRole adds a role to the reaction role menu
 func AddRole(session *discordgo.Session, message *discordgo.MessageCreate) {
+
+	emojiSplice, _ := regexp.Compile("<(a?):(.+):(\\d+)>")
 
 	newRole := reactionrole.Role{
 		ID: "testID2",

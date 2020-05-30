@@ -80,7 +80,7 @@ func SaveRole(catagoryName string, role Role) {
 		},
 	}
 
-	Catagories = append(Catagories, newCatagory[0])
+	Catagories = append(Catagories, newCatagory...)
 	saveRoles()
 }
 
