@@ -103,16 +103,27 @@ func Roles(session *discordgo.Session, commandMessage *discordgo.MessageCreate) 
 // AddRole adds a role to the reaction role menu
 func AddRole(session *discordgo.Session, message *discordgo.MessageCreate) {
 
-	emojiSplice, _ := regexp.Compile("<(a?):(.+):(\\d+)>")
+	roleRegex := regexp.MustCompile(`<@&(\d+)>`)
+	role := roleRegex.FindStringSubmatch(message.Content)
+
+	emojiRegex := regexp.MustCompile(`<(a?):(.+):(\d+)>`)
+	emoji := emojiRegex.FindStringSubmatch(message.Content)
+
+	log.Println("role: " + role[1])
+	log.Println("emoji0: " + emoji[1])
+	log.Println("emoji1: " + emoji[2])
+	log.Println("emoji2: " + emoji[3])
 
 	newRole := reactionrole.Role{
-		ID: "testID2",
+		ID: role[1],
 		Emoji: reactionrole.Emoji{
-			Prefix: "a",
-			Name:   "testName",
-			ID:     "testID",
+			Prefix: emoji[1],
+			Name:   emoji[2],
+			ID:     emoji[3],
 		},
 	}
+
+	log.Println("saved")
 
 	reactionrole.SaveRole("testCatagory", newRole)
 }
