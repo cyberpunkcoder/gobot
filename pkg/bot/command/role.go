@@ -3,6 +3,7 @@ package command
 import (
 	"log"
 	"regexp"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/cyberpunkprogrammer/gobot/pkg/bot/reactionrole"
@@ -109,10 +110,17 @@ func AddRole(session *discordgo.Session, message *discordgo.MessageCreate) {
 	emojiRegex := regexp.MustCompile(`<(a?):(.+):(\d+)>`)
 	emoji := emojiRegex.FindStringSubmatch(message.Content)
 
-	log.Println("role: " + role[1])
-	log.Println("emoji0: " + emoji[1])
-	log.Println("emoji1: " + emoji[2])
-	log.Println("emoji2: " + emoji[3])
+	log.Println(message.Content)
+
+	catagory := strings.ReplaceAll(message.Content, emoji[0], "")
+	catagory = strings.TrimLeft(catagory, " ")
+	catagory = strings.ReplaceAll(catagory, role[0], "")
+
+	spaceRegex := regexp.MustCompile(`\s(.*)`)
+	catagory = spaceRegex.FindString(catagory)
+	catagory = strings.TrimSpace(catagory)
+
+	log.Println(catagory)
 
 	newRole := reactionrole.Role{
 		ID: role[1],
@@ -123,9 +131,7 @@ func AddRole(session *discordgo.Session, message *discordgo.MessageCreate) {
 		},
 	}
 
-	log.Println("saved")
-
-	reactionrole.SaveRole("testCatagory", newRole)
+	reactionrole.SaveRole(catagory, newRole)
 }
 
 // RemoveRole adds a role to the reaction role menu
