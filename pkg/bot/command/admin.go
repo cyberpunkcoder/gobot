@@ -167,7 +167,8 @@ func Purge(session *discordgo.Session, commandMessage *discordgo.MessageCreate) 
 		return
 	}
 
-	session.ChannelMessageSend(commandChannel, "<@"+author+"> purging.")
+	session.ChannelMessageDelete(commandChannel, commandMessage.ID)
+	purgeMessage, _ := session.ChannelMessageSend(commandChannel, "<@"+author+"> purging.")
 
 	// For each of the last 100 messages in the channel
 	for _, message := range messages {
@@ -185,4 +186,6 @@ func Purge(session *discordgo.Session, commandMessage *discordgo.MessageCreate) 
 			}
 		}
 	}
+
+	session.ChannelMessageDelete(commandChannel, purgeMessage.ID)
 }
