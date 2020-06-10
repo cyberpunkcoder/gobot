@@ -102,25 +102,23 @@ func Roles(session *discordgo.Session, commandMessage *discordgo.MessageCreate) 
 }
 
 // AddRole adds a role to the reaction role menu
-func AddRole(session *discordgo.Session, message *discordgo.MessageCreate) {
+func AddRole(session *discordgo.Session, commandMessage *discordgo.MessageCreate) {
+
+	author := commandMessage.Author.ID
 
 	roleRegex := regexp.MustCompile(`<@&(\d+)>`)
-	role := roleRegex.FindStringSubmatch(message.Content)
+	role := roleRegex.FindStringSubmatch(commandMessage.Content)
 
 	emojiRegex := regexp.MustCompile(`<(a?):(.+):(\d+)>`)
-	emoji := emojiRegex.FindStringSubmatch(message.Content)
+	emoji := emojiRegex.FindStringSubmatch(commandMessage.Content)
 
-	log.Println(message.Content)
-
-	catagory := strings.ReplaceAll(message.Content, emoji[0], "")
+	catagory := strings.ReplaceAll(commandMessage.Content, emoji[0], "")
 	catagory = strings.TrimLeft(catagory, " ")
 	catagory = strings.ReplaceAll(catagory, role[0], "")
 
 	spaceRegex := regexp.MustCompile(`\s(.*)`)
 	catagory = spaceRegex.FindString(catagory)
 	catagory = strings.TrimSpace(catagory)
-
-	log.Println(catagory)
 
 	newRole := reactionrole.Role{
 		ID: role[1],
@@ -132,10 +130,30 @@ func AddRole(session *discordgo.Session, message *discordgo.MessageCreate) {
 	}
 
 	reactionrole.SaveRole(catagory, newRole)
+
+	output := "<@" + author + "> role added.\n"
+	output += ">>> "
+	output += "<" + emoji[1] + ":" + emoji[2] + ":" + emoji[3] + "> - <@&" + role[1] + ">\n"
+
+	session.ChannelMessageSend(commandMessage.ChannelID, output)
 }
 
 // RemoveRole adds a role to the reaction role menu
-func RemoveRole(session *discordgo.Session, message *discordgo.MessageCreate) {
-	// TODO Addrole function
+func RemoveRole(session *discordgo.Session, commandMessage *discordgo.MessageCreate) {
 
+	author := commandMessage.Author.ID
+	commandChannel := commandMessage.ChannelID
+
+	roleRegex := regexp.MustCompile(`<@&(\d+)>`)
+	role := roleRegex.FindStringSubmatch(commandMessage.Content)
+
+	err := reactionrole.RemoveRole(role[1])
+
+	// Return if unable to create message
+	if err != nil {
+		session.ChannelMessageSend(commandChannel, "<@"+author+"> role not found.")
+		return
+	}
+
+	session.ChannelMessageSend(commandChannel, "<@"+author+"> role removed.")
 }
