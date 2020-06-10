@@ -2,6 +2,7 @@ package reactionrole
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"log"
 )
@@ -82,6 +83,35 @@ func SaveRole(catagoryName string, role Role) {
 
 	Catagories = append(Catagories, newCatagory...)
 	saveRoles()
+}
+
+// RemoveRole removes a role from the reaction role menu
+func RemoveRole(roleID string) error {
+	for i, catagory := range Catagories {
+		for j, reactionRole := range catagory.Role {
+
+			// If the role id is found
+			if reactionRole.ID == roleID {
+
+				// Remove the role from the catagory
+				Catagories[i].Role[j] = catagory.Role[len(catagory.Role)-1]
+				Catagories[i].Role = catagory.Role[:len(catagory.Role)-1]
+
+				// If catagory is empty, remove it
+				if len(Catagories[i].Role) == 0 {
+					Catagories[i] = Catagories[len(Catagories)-1]
+					Catagories = Catagories[:len(Catagories)-1]
+				}
+
+				// Save changes to reactionrroles.json
+				saveRoles()
+				return nil
+			}
+		}
+	}
+
+	// If the role was not found return an error.
+	return errors.New("Cannot find reaction role \"" + roleID + "\"")
 }
 
 // LoadMessages loads messages ids that users react too to obtain roles
