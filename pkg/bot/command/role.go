@@ -105,6 +105,39 @@ func Roles(session *discordgo.Session, commandMessage *discordgo.MessageCreate) 
 func AddRole(session *discordgo.Session, commandMessage *discordgo.MessageCreate) {
 
 	author := commandMessage.Author.ID
+	commandChannel := commandMessage.ChannelID
+
+	// Bot permissions
+	botPermissions, err := session.State.UserChannelPermissions(session.State.User.ID, commandChannel)
+
+	// Return if unable to check bot permissions
+	if err != nil {
+		log.Println(err)
+		session.ChannelMessageSend(commandChannel, "<@"+author+"> unable to check my permissions.")
+		return
+	}
+
+	// Return if bot does not have permission to manage roles
+	if botPermissions&discordgo.PermissionManageRoles == 0 {
+		session.ChannelMessageSend(commandChannel, "<@"+author+"> I don't have permission to manage roles.")
+		return
+	}
+
+	// Command author permissions
+	permissions, err := session.State.UserChannelPermissions(author, commandChannel)
+
+	// Return if unable to check author permissions
+	if err != nil {
+		log.Println(err)
+		session.ChannelMessageSend(commandChannel, "<@"+author+"> unable to check your permissions.")
+		return
+	}
+
+	// Return if author does not have permission to manage roles
+	if permissions&discordgo.PermissionManageRoles == 0 {
+		session.ChannelMessageSend(commandChannel, "<@"+author+"> you don't have permission to manage roles.")
+		return
+	}
 
 	roleRegex := regexp.MustCompile(`<@&(\d+)>`)
 	role := roleRegex.FindStringSubmatch(commandMessage.Content)
@@ -144,10 +177,41 @@ func RemoveRole(session *discordgo.Session, commandMessage *discordgo.MessageCre
 	author := commandMessage.Author.ID
 	commandChannel := commandMessage.ChannelID
 
+	// Bot permissions
+	botPermissions, err := session.State.UserChannelPermissions(session.State.User.ID, commandChannel)
+
+	// Return if unable to check bot permissions
+	if err != nil {
+		log.Println(err)
+		session.ChannelMessageSend(commandChannel, "<@"+author+"> unable to check my permissions.")
+		return
+	}
+
+	// Return if bot does not have permission to manage roles
+	if botPermissions&discordgo.PermissionManageRoles == 0 {
+		session.ChannelMessageSend(commandChannel, "<@"+author+"> I don't have permission to manage roles.")
+		return
+	}
+
+	// Command author permissions
+	permissions, err := session.State.UserChannelPermissions(author, commandChannel)
+
+	// Return if unable to check author permissions
+	if err != nil {
+		log.Println(err)
+		session.ChannelMessageSend(commandChannel, "<@"+author+"> unable to check your permissions.")
+		return
+	}
+
+	// Return if author does not have permission to manage roles
+	if permissions&discordgo.PermissionManageRoles == 0 {
+		session.ChannelMessageSend(commandChannel, "<@"+author+"> you don't have permission to manage roles.")
+		return
+	}
+
 	roleRegex := regexp.MustCompile(`<@&(\d+)>`)
 	role := roleRegex.FindStringSubmatch(commandMessage.Content)
-
-	err := reactionrole.RemoveRole(role[1])
+	err = reactionrole.RemoveRole(role[1])
 
 	// Return if unable to create message
 	if err != nil {
