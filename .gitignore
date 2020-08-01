@@ -1,3 +1,4 @@
 # All json files ignored to prevent bot token or roles from being pushed
 /**/*.json
 *.save
+/cmd/gobot/main
