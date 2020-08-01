@@ -9,14 +9,17 @@ import (
 )
 
 var (
+	// BinPath is the location of the executable binary
+	BinPath string
+
 	// Catagories nameid and emojiid relation for each reaction role
 	Catagories Catagory
 
 	// Messages messageid of all messages users react too to get roles
 	Messages message
 
-	reactionRoleFile         = "../../json/role/reactionroles.json"
-	reactionRoleMessagesFile = "../../json/role/reactionrolemessages.json"
+	reactionRoleFile         = "/json/role/reactionroles.json"
+	reactionRoleMessagesFile = "/json/role/reactionrolemessages.json"
 )
 
 // Catagory of reaction roles each containing a number of reaction roles
@@ -43,14 +46,13 @@ type message []string
 
 // LoadRoles loads roles and their associated emoji from reactionroles.json
 func LoadRoles() error {
-
 	log.Println("Loading reaction roles")
 
-	file, err := ioutil.ReadFile(reactionRoleFile)
+	file, err := ioutil.ReadFile(BinPath + reactionRoleFile)
 
 	// Create new reactionroles.json file if none exists, returns for other errors
 	if err != nil {
-		if strings.Contains(err.Error(), "no such file or directory") {
+		if strings.Contains(err.Error(), "no") && strings.Contains(err.Error(), "directory") {
 			saveRoles()
 			return nil
 		}
@@ -125,11 +127,11 @@ func LoadMessages() error {
 
 	log.Println("Loading reaction role messages")
 
-	file, err := ioutil.ReadFile(reactionRoleMessagesFile)
+	file, err := ioutil.ReadFile(BinPath + reactionRoleMessagesFile)
 
 	// Create new reactionrolemessages.json file if none exists, returns for other errors
 	if err != nil {
-		if strings.Contains(err.Error(), "no such file or directory") {
+		if strings.Contains(err.Error(), "no") && strings.Contains(err.Error(), "directory") {
 			saveMessages()
 			return nil
 		}
@@ -163,7 +165,7 @@ func saveMessages() error {
 		return err
 	}
 
-	err = ioutil.WriteFile(reactionRoleMessagesFile, roleMessagesJSON, 0644)
+	err = ioutil.WriteFile(BinPath+reactionRoleMessagesFile, roleMessagesJSON, 0644)
 
 	// Return if there was an error writing to reactionrolemessages.json
 	if err != nil {
@@ -184,7 +186,7 @@ func saveRoles() error {
 		return err
 	}
 
-	err = ioutil.WriteFile(reactionRoleFile, roleMessagesJSON, 0644)
+	err = ioutil.WriteFile(BinPath+reactionRoleFile, roleMessagesJSON, 0644)
 
 	// Return if there was an error writing to reactionrolemessages.json
 	if err != nil {

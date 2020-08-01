@@ -11,6 +11,9 @@ import (
 )
 
 var (
+	// BinPath is the location of the executable binary
+	BinPath string
+
 	// DiscordToken token to access bot application on Discord
 	DiscordToken string
 
@@ -21,7 +24,7 @@ var (
 	JoinRole string
 
 	// configFile is the file which contians the program startup configuration
-	configFile = "../../json/config.json"
+	configFile = "/json/config.json"
 )
 
 type configStruct struct {
@@ -32,9 +35,9 @@ type configStruct struct {
 
 // LoadConfig read and load the config.json file
 func LoadConfig() error {
-	log.Println("Loading config")
+	log.Println("Loading configuration")
 
-	file, err := ioutil.ReadFile(configFile)
+	file, err := ioutil.ReadFile(BinPath + configFile)
 
 	// Return if there was a problem reading the file
 	if err != nil {
@@ -72,7 +75,7 @@ func SaveConfig() error {
 		return err
 	}
 
-	err = ioutil.WriteFile(configFile, configJSON, 0644)
+	err = ioutil.WriteFile(BinPath+configFile, configJSON, 0644)
 
 	// Return if there was an error writing to the file
 	if err != nil {
