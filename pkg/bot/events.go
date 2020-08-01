@@ -19,7 +19,9 @@ func ready(session *discordgo.Session, ready *discordgo.Ready) {
 
 // guildMemberAdd is called when a member joins the guild
 func guildMemberAdd(session *discordgo.Session, user *discordgo.GuildMemberAdd) {
-	session.GuildMemberRoleAdd(user.GuildID, user.User.ID, config.JoinRole)
+	if config.JoinRole != "" {
+		session.GuildMemberRoleAdd(user.GuildID, user.User.ID, config.JoinRole)
+	}
 }
 
 // messageCreate is called whenever a message has been created
@@ -71,7 +73,7 @@ func messageReactionAdd(session *discordgo.Session, reaction *discordgo.MessageR
 
 	// Return if bot does not have permission to manage roles
 	if botPermissions&discordgo.PermissionManageRoles == 0 {
-		log.Println("Insufficient permission to manage roles.")
+		session.ChannelMessage(reaction.ChannelID, "<@"+reaction.UserID+"> I don't have permission to manage roles.")
 		return
 	}
 
@@ -88,7 +90,7 @@ func messageReactionAdd(session *discordgo.Session, reaction *discordgo.MessageR
 	}
 }
 
-// messageReactionAdd is called whenever a reaction has been added to a message
+// messageReactionAdd is called whenever a reaction has been removed from a message
 func messageReactionRemove(session *discordgo.Session, reaction *discordgo.MessageReactionRemove) {
 
 	// Bot permissions
@@ -102,7 +104,7 @@ func messageReactionRemove(session *discordgo.Session, reaction *discordgo.Messa
 
 	// Return if bot does not have permission to manage roles
 	if botPermissions&discordgo.PermissionManageRoles == 0 {
-		log.Println("Insufficient permission to manage roles.")
+		session.ChannelMessage(reaction.ChannelID, "<@"+reaction.UserID+"> I don't have permission to manage roles.")
 		return
 	}
 
