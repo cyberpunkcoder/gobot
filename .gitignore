@@ -2,3 +2,4 @@
 json/config.json
 json/role/reactionroles.json
 json/role/reactionrolemessages.json
+*.save
