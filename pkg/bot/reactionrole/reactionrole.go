@@ -13,6 +13,9 @@ var (
 
 	// Messages messageid of all messages users react too to get roles
 	Messages message
+
+	reactionRoleFile         = "../../json/role/reactionroles.json"
+	reactionRoleMessagesFile = "../../json/role/reactionrolemessages.json"
 )
 
 // Catagory of reaction roles each containing a number of reaction roles
@@ -42,11 +45,10 @@ func LoadRoles() error {
 
 	log.Println("Loading reaction roles")
 
-	file, err := ioutil.ReadFile("../../json/role/reactionroles.json")
+	file, err := ioutil.ReadFile(reactionRoleFile)
 
 	// Return if there was an error reading reactionroles.json
 	if err != nil {
-		log.Println(err.Error())
 		return err
 	}
 
@@ -54,7 +56,6 @@ func LoadRoles() error {
 
 	// Return if there was an error unmarshaling reactionrroles.json
 	if err != nil {
-		log.Println(err.Error())
 		return err
 	}
 
@@ -119,7 +120,7 @@ func LoadMessages() error {
 
 	log.Println("Loading reaction role messages")
 
-	file, err := ioutil.ReadFile("../../json/role/reactionrolemessages.json")
+	file, err := ioutil.ReadFile(reactionRoleMessagesFile)
 
 	// Return if there was an error reading reactionroles.json
 	if err != nil {
@@ -142,7 +143,7 @@ func LoadMessages() error {
 func SaveMessage(messageid string) error {
 
 	Messages = append(Messages, messageid)
-	roleMessagesJSON, err := json.Marshal(Messages)
+	roleMessagesJSON, err := json.MarshalIndent(Messages, "", " ")
 
 	// Return if there was an error marshaling reactionrolemessages.json
 	if err != nil {
@@ -150,7 +151,7 @@ func SaveMessage(messageid string) error {
 		return err
 	}
 
-	err = ioutil.WriteFile("../../json/role/reactionrolemessages.json", roleMessagesJSON, 0644)
+	err = ioutil.WriteFile(reactionRoleMessagesFile, roleMessagesJSON, 0644)
 
 	// Return if there was an error writing to reactionrolemessages.json
 	if err != nil {
@@ -163,7 +164,7 @@ func SaveMessage(messageid string) error {
 
 // saveRoles saves the current state of the roles to reactionroles.json
 func saveRoles() error {
-	roleMessagesJSON, err := json.Marshal(Catagories)
+	roleMessagesJSON, err := json.MarshalIndent(Catagories, "", " ")
 
 	// Return if there was an error marshaling reactionrolemessages.json
 	if err != nil {
@@ -171,7 +172,7 @@ func saveRoles() error {
 		return err
 	}
 
-	err = ioutil.WriteFile("../../json/role/reactionroles.json", roleMessagesJSON, 0644)
+	err = ioutil.WriteFile(reactionRoleFile, roleMessagesJSON, 0644)
 
 	// Return if there was an error writing to reactionrolemessages.json
 	if err != nil {
