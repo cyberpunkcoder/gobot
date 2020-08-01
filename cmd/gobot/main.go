@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/cyberpunkprogrammer/gobot/pkg/bot"
 	"github.com/cyberpunkprogrammer/gobot/pkg/bot/config"
@@ -16,8 +17,13 @@ func main() {
 
 	// Return if error loading config.json
 	if err != nil {
-		fmt.Println(err.Error())
-		return
+		if strings.Contains(err.Error(), "no such file or directory") {
+			fmt.Println("Configuration not found")
+			config.Create()
+		} else {
+			log.Println(err)
+			return
+		}
 	}
 
 	// Load roles assigned by reaction
