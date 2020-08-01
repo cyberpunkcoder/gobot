@@ -65,11 +65,7 @@ func SaveConfig() error {
 		JoinRole:      JoinRole,
 	}
 
-	fmt.Println(save)
-
 	configJSON, err := json.MarshalIndent(save, "", " ")
-
-	fmt.Println(configJSON)
 
 	// Return if there was a problem marshaling config
 	if err != nil {
