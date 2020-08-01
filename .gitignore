@@ -1,3 +1,4 @@
+# All json files excluded to prevent bot token or roles from being pushed
 json/config.json
 json/role/reactionroles.json
 json/role/reactionrolemessages.json
