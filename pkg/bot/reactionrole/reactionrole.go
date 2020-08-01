@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"log"
+	"strings"
 )
 
 var (
@@ -47,8 +48,12 @@ func LoadRoles() error {
 
 	file, err := ioutil.ReadFile(reactionRoleFile)
 
-	// Return if there was an error reading reactionroles.json
+	// Create new reactionroles.json file if none exists, returns for other errors
 	if err != nil {
+		if strings.Contains(err.Error(), "no such file or directory") {
+			saveRoles()
+			return nil
+		}
 		return err
 	}
 
@@ -122,9 +127,12 @@ func LoadMessages() error {
 
 	file, err := ioutil.ReadFile(reactionRoleMessagesFile)
 
-	// Return if there was an error reading reactionroles.json
+	// Create new reactionrolemessages.json file if none exists, returns for other errors
 	if err != nil {
-		log.Println(err.Error())
+		if strings.Contains(err.Error(), "no such file or directory") {
+			saveMessages()
+			return nil
+		}
 		return err
 	}
 
@@ -140,9 +148,13 @@ func LoadMessages() error {
 }
 
 // SaveMessage saves id of reaction role message for checking when users react to any message
-func SaveMessage(messageid string) error {
-
+func SaveMessage(messageid string) {
 	Messages = append(Messages, messageid)
+	saveMessages()
+}
+
+// saveRoles saves the current state of the reaction role messages reactionrolemessages.json
+func saveMessages() error {
 	roleMessagesJSON, err := json.MarshalIndent(Messages, "", " ")
 
 	// Return if there was an error marshaling reactionrolemessages.json
