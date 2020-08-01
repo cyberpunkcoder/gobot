@@ -4,12 +4,11 @@
 > A robust expandable discord bot written in go!
 
 ## Getting Started
-Assuming you have go installed and have a discord bot with a token, simply clone the repo into any location.
+Assuming you have go installed and have a discord bot with a token, simply copy and paste the command below!
 You will be prompted to enter a discord bot token, command prefix and optionally the ID of a role users get when they join.
 That's it! Assuming everything went well, your bot should be online and ready to use!
 
-```git clone https://github.com/cyberpunkprogrammer/gobot.git && cd gobot/cmd/gobot && go run main.go```
-
+```git clone https://github.com/cyberpunkprogrammer/gobot.git && cd gobot/cmd/gobot && go build main.go && ./main```
 ## Included Commands
 > The following examples assume you have set the command prefix to be "!"
 - <b>!hello</b> Pings the bot, bot will reply hello back.
