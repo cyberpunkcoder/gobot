@@ -43,13 +43,6 @@ func Roles(session *discordgo.Session, commandMessage *discordgo.MessageCreate) 
 	// Command author permissions
 	permissions, err := session.State.UserChannelPermissions(author, commandChannel)
 
-	// Return if unable to check author permissions
-	if err != nil {
-		log.Println(err)
-		session.ChannelMessageSend(commandChannel, "<@"+author+"> unable to check your permissions.")
-		return
-	}
-
 	// Return if author does not have permission to add reactions
 	if permissions&discordgo.PermissionAddReactions == 0 {
 		session.ChannelMessageSend(commandChannel, "<@"+author+"> you don't have permission to add reactions.")
@@ -59,6 +52,13 @@ func Roles(session *discordgo.Session, commandMessage *discordgo.MessageCreate) 
 	// Return if author does not have permission to manage roles
 	if permissions&discordgo.PermissionManageRoles == 0 {
 		session.ChannelMessageSend(commandChannel, "<@"+author+"> you don't have permission to manage roles.")
+		return
+	}
+
+	// Return if unable to check author permissions
+	if err != nil {
+		log.Println(err)
+		session.ChannelMessageSend(commandChannel, "<@"+author+"> unable to check your permissions.")
 		return
 	}
 
@@ -126,16 +126,16 @@ func AddRole(session *discordgo.Session, commandMessage *discordgo.MessageCreate
 	// Command author permissions
 	permissions, err := session.State.UserChannelPermissions(author, commandChannel)
 
+	// Return if author does not have permission to manage roles
+	if permissions&discordgo.PermissionManageRoles == 0 {
+		session.ChannelMessageSend(commandChannel, "<@"+author+"> you don't have permission to manage roles.")
+		return
+	}
+
 	// Return if unable to check author permissions
 	if err != nil {
 		log.Println(err)
 		session.ChannelMessageSend(commandChannel, "<@"+author+"> unable to check your permissions.")
-		return
-	}
-
-	// Return if author does not have permission to manage roles
-	if permissions&discordgo.PermissionManageRoles == 0 {
-		session.ChannelMessageSend(commandChannel, "<@"+author+"> you don't have permission to manage roles.")
 		return
 	}
 
@@ -144,6 +144,11 @@ func AddRole(session *discordgo.Session, commandMessage *discordgo.MessageCreate
 
 	emojiRegex := regexp.MustCompile(`<(a?):(.+):(\d+)>`)
 	emoji := emojiRegex.FindStringSubmatch(commandMessage.Content)
+
+	if len(role) != 2 || len(emoji) != 4 {
+		session.ChannelMessageSend(commandChannel, "<@"+author+"> incorrectly formatted command.")
+		return
+	}
 
 	catagory := strings.ReplaceAll(commandMessage.Content, emoji[0], "")
 	catagory = strings.TrimLeft(catagory, " ")
@@ -196,16 +201,16 @@ func RemoveRole(session *discordgo.Session, commandMessage *discordgo.MessageCre
 	// Command author permissions
 	permissions, err := session.State.UserChannelPermissions(author, commandChannel)
 
+	// Return if author does not have permission to manage roles
+	if permissions&discordgo.PermissionManageRoles == 0 {
+		session.ChannelMessageSend(commandChannel, "<@"+author+"> you don't have permission to manage roles.")
+		return
+	}
+
 	// Return if unable to check author permissions
 	if err != nil {
 		log.Println(err)
 		session.ChannelMessageSend(commandChannel, "<@"+author+"> unable to check your permissions.")
-		return
-	}
-
-	// Return if author does not have permission to manage roles
-	if permissions&discordgo.PermissionManageRoles == 0 {
-		session.ChannelMessageSend(commandChannel, "<@"+author+"> you don't have permission to manage roles.")
 		return
 	}
 

@@ -32,16 +32,16 @@ func Kick(session *discordgo.Session, commandMessage *discordgo.MessageCreate) {
 	// Command author permissions
 	permissions, err := session.State.UserChannelPermissions(author, commandChannel)
 
+	// Return if author does not have permission to kick
+	if permissions&discordgo.PermissionKickMembers == 0 {
+		session.ChannelMessageSend(commandChannel, "<@"+author+"> you don't have permission to kick.")
+		return
+	}
+
 	// Return if unable to check command author permissions
 	if err != nil {
 		log.Println(err)
 		session.ChannelMessageSend(commandChannel, "<@"+author+"> unable to check your permissions.")
-		return
-	}
-
-	// Return if author does not have permission to kick
-	if permissions&discordgo.PermissionKickMembers == 0 {
-		session.ChannelMessageSend(commandChannel, "<@"+author+"> you don't have permission to kick.")
 		return
 	}
 
@@ -88,16 +88,16 @@ func Ban(session *discordgo.Session, commandMessage *discordgo.MessageCreate) {
 	// Command author permissions
 	permissions, err := session.State.UserChannelPermissions(author, commandChannel)
 
+	// Return if command author does not have permission to ban
+	if permissions&discordgo.PermissionBanMembers == 0 {
+		session.ChannelMessageSend(commandChannel, "<@"+author+"> you don't have permission to ban.")
+		return
+	}
+
 	// Return if unable to check command author permissions
 	if err != nil {
 		log.Println(err)
 		session.ChannelMessageSend(commandChannel, "<@"+author+"> unable to check your permissions.")
-		return
-	}
-
-	// Return if command author does not have permission to ban
-	if permissions&discordgo.PermissionBanMembers == 0 {
-		session.ChannelMessageSend(commandChannel, "<@"+author+"> you don't have permission to ban.")
 		return
 	}
 
@@ -147,17 +147,17 @@ func Purge(session *discordgo.Session, commandMessage *discordgo.MessageCreate) 
 	// Author permissions
 	permissions, err := session.State.UserChannelPermissions(author, commandChannel)
 
-	// Return if unable to check command author permissions
-	if err != nil {
-		log.Println(err)
-		session.ChannelMessageSend(commandChannel, "<@"+author+"> unable to check your permissions.")
-		return
-	}
-
 	// Return if command author does not have permission to delete messages
 	if permissions&discordgo.AuditLogActionMessageDelete == 0 {
 		log.Println(err)
 		session.ChannelMessageSend(commandChannel, "<@"+author+"> you do not have permission to delete messages.")
+		return
+	}
+
+	// Return if unable to check command author permissions
+	if err != nil {
+		log.Println(err)
+		session.ChannelMessageSend(commandChannel, "<@"+author+"> unable to check your permissions.")
 		return
 	}
 
