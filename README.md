@@ -1,4 +1,4 @@
-<img src="img/discordgo.png" align="right" />
+<img src="assets/discordgo.png" align="right" />
 
 # Gobot
 > A robust expandable discord bot written in go!
