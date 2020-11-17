@@ -1,9 +1,8 @@
 # Ignore all
 /cmd/gobot/*
 
-# Unignore all with extensions
-!*.*
+# Unignore all with go extensions
+!*.go*
 
 # Ignore swap files
 *.swp
-/cmd/gobot/*.json
