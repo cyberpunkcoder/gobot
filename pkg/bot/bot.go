@@ -14,7 +14,7 @@ import (
 func Start() {
 
 	// Create new bot session
-	botSession, err := discordgo.New("Bot " + config.DiscordToken)
+	dg, err := discordgo.New("Bot " + config.DiscordToken)
 
 	// Check if bot was created
 	if err != nil {
@@ -23,13 +23,16 @@ func Start() {
 	}
 
 	// Sever events
-	botSession.AddHandler(ready)
-	botSession.AddHandler(guildMemberAdd)
-	botSession.AddHandler(messageCreate)
-	botSession.AddHandler(messageReactionAdd)
-	botSession.AddHandler(messageReactionRemove)
+	dg.AddHandler(ready)
+	dg.AddHandler(guildMemberAdd)
+	dg.AddHandler(messageCreate)
+	dg.AddHandler(messageReactionAdd)
+	dg.AddHandler(messageReactionRemove)
 
-	err = botSession.Open()
+	// Gather all intents
+	dg.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAll)
+
+	err = dg.Open()
 
 	// Check if Discord connection was made
 	if err != nil {
@@ -43,5 +46,5 @@ func Start() {
 	<-sc
 
 	// Cleanly close down the Discord session
-	botSession.Close()
+	dg.Close()
 }

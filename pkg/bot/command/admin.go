@@ -126,7 +126,7 @@ func Purge(session *discordgo.Session, commandMessage *discordgo.MessageCreate) 
 	commandChannel := commandMessage.ChannelID
 
 	// Bot permissions
-	// botPermissions, err := session.State.UserChannelPermissions(session.State.User.ID, commandChannel)
+	botPermissions, err := session.State.UserChannelPermissions(session.State.User.ID, commandChannel)
 
 	// Last 100 messages in command channel
 	messages, err := session.ChannelMessages(commandChannel, 100, commandMessage.ID, "", "")
@@ -138,22 +138,21 @@ func Purge(session *discordgo.Session, commandMessage *discordgo.MessageCreate) 
 		return
 	}
 
-	/*
-		Return if bot does not have permission to delete messages
-		if botPermissions&discordgo.AuditLogActionMessageDelete == 0 {
-			session.ChannelMessageSend(commandChannel, "<@"+author+"> I don't have permission to delete messages.")
-			return
-		}
+	//Return if bot does not have permission to delete messages
+	if botPermissions == 0 {
+		session.ChannelMessageSend(commandChannel, "<@"+author+"> I don't have permission to delete messages.")
+		return
+	}
 
-		// Author permissions
-		permissions, err := session.State.UserChannelPermissions(author, commandChannel)
+	// Author permissions
+	permissions, err := session.State.UserChannelPermissions(author, commandChannel)
 
-		Return if command author does not have permission to delete messages
-		if permissions&discordgo.AuditLogActionMessageDelete == 0 {
-			log.Println(err)
-			session.ChannelMessageSend(commandChannel, "<@"+author+"> you do not have permission to delete messages.")
-			return
-		}*/
+	//Return if command author does not have permission to delete messages
+	if permissions == 0 {
+		log.Println(err)
+		session.ChannelMessageSend(commandChannel, "<@"+author+"> you do not have permission to delete messages.")
+		return
+	}
 
 	// Return if unable to check command author permissions
 	if err != nil {
