@@ -1,20 +1,91 @@
 package command
 
 import (
+	"strings"
+
 	"github.com/bwmarrin/discordgo"
+	"github.com/cyberpunkprogrammer/gobot/pkg/bot/config"
 )
 
-// Help returns the usage of all commands avaliable to the command author
-func Help(session *discordgo.Session, message *discordgo.MessageCreate) {
-	// TODO write help function
+var (
+	executables []executable
+)
+
+type executable interface {
+	getName() string
+	getDescription() string
+	getPermisssions() []int
+	execute(message *discordgo.MessageCreate, session *discordgo.Session)
 }
 
-// Hello messages "Hello!" in the chat
-func Hello(session *discordgo.Session, message *discordgo.MessageCreate) {
-	session.ChannelMessageSend(message.ChannelID, "<@"+message.Author.ID+"> hello!")
+type command struct {
+	executable
+	name        string
+	description string
+	permissions []int
 }
 
-// Unknown command was called
-func Unknown(session *discordgo.Session, message *discordgo.MessageCreate, keyword string) {
-	session.ChannelMessageSend(message.ChannelID, "<@"+message.Author.ID+"> unknown command \""+keyword+"\".")
+// Execute a command
+func Execute(message *discordgo.MessageCreate, session *discordgo.Session) {
+
+	// Get keyword fom message text by removing CommandPrefix and everything after first space
+	keyword := strings.Replace(message.Content, config.CommandPrefix, "", -1)
+	keyword = strings.Split(keyword, " ")[0]
+
+	// Look through all commands to see if there is a match
+	found := false
+	for _, e := range executables {
+		if e.getName() == keyword {
+			found = true
+			author := message.Author.ID
+			channel := message.ChannelID
+
+			userPermissions, err := session.State.UserChannelPermissions(author, channel)
+
+			if err != nil {
+				session.ChannelMessageSend(channel, "<@"+author+"> unable to check your permissions.")
+				return
+			}
+
+			var missingPermissions []int
+			for _, p := range e.getPermisssions() {
+				if userPermissions&p == 0 {
+					missingPermissions = append(missingPermissions, p)
+				}
+			}
+
+			if len(missingPermissions) > 0 {
+				reply := "<@" + message.Author.ID + "> you don't have permission to execute this command."
+
+				/*
+					for _, p := range missingPermissions {
+						TODO: List permissions missing
+					}
+				*/
+
+				session.ChannelMessageSend(message.ChannelID, reply)
+				return
+			}
+
+			e.execute(message, session)
+			return
+		}
+	}
+
+	// If no matching command was found
+	if !found {
+		session.ChannelMessageSend(message.ChannelID, "<@"+message.Author.ID+"> unknown command \""+keyword+"\".")
+	}
+}
+
+func (c *command) getName() string {
+	return c.name
+}
+
+func (c *command) getDescription() string {
+	return c.description
+}
+
+func (c *command) getPermisssions() []int {
+	return c.permissions
 }

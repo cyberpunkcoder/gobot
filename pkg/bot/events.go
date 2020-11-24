@@ -26,36 +26,8 @@ func guildMemberAdd(session *discordgo.Session, user *discordgo.GuildMemberAdd) 
 
 // messageCreate is called whenever a message has been created
 func messageCreate(session *discordgo.Session, message *discordgo.MessageCreate) {
-
 	if strings.HasPrefix(message.Content, config.CommandPrefix) {
-
-		// Get keyword fom message text by removing CommandPrefix and everything after first space
-		keyword := strings.Replace(message.Content, config.CommandPrefix, "", -1)
-		keyword = strings.Split(keyword, " ")[0]
-
-		// Ignore all messages created by the bot itself
-		if message.Author.ID == session.State.User.ID {
-			return
-		}
-
-		switch keyword {
-		case "hello":
-			command.Hello(session, message)
-		case "kick":
-			command.Kick(session, message)
-		case "ban":
-			command.Ban(session, message)
-		case "purge":
-			command.Purge(session, message)
-		case "roles":
-			command.Roles(session, message)
-		case "addrole":
-			command.AddRole(session, message)
-		case "removerole":
-			command.RemoveRole(session, message)
-		default:
-			command.Unknown(session, message, keyword)
-		}
+		command.Execute(message, session)
 	}
 }
 
