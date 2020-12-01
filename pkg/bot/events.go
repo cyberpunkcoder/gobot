@@ -53,7 +53,7 @@ func messageReactionAdd(session *discordgo.Session, reaction *discordgo.MessageR
 		if reaction.MessageID == reactionRoleMessage {
 			for _, reactionRoleCatagory := range reactionrole.Catagories {
 				for _, reactionRole := range reactionRoleCatagory.Role {
-					if reactionRole.Emoji.ID == reaction.Emoji.ID {
+					if reactionRole.Emoji.ID == reaction.Emoji.ID && reaction.UserID != session.State.User.ID {
 						session.GuildMemberRoleAdd(reaction.GuildID, reaction.UserID, reactionRole.ID)
 					}
 				}

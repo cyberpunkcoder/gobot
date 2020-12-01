@@ -11,7 +11,7 @@ type hello struct {
 func init() {
 	hello := hello{command{
 		name:        "hello",
-		description: "Replies hello to a member",
+		description: "Replies hello to a user.",
 	}}
 	executables = append(executables, &hello)
 }

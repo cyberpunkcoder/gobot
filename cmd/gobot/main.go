@@ -68,7 +68,6 @@ func main() {
 	// Return if error loading reactionrroles.json
 	if err != nil {
 		log.Println("Error loading reaction roles,", err)
-		return
 	}
 
 	// Load roles assigned by reaction
@@ -77,7 +76,6 @@ func main() {
 	// Return if error loading reactionrroles.json
 	if err != nil {
 		log.Println("Error loading reaction role messages,", err)
-		return
 	}
 
 	bot.Start()

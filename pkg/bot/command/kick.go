@@ -9,9 +9,11 @@ type kick struct {
 }
 
 func init() {
+
 	kick := kick{command{
 		name:        "kick",
-		description: "Kicks a mentioned member",
+		parameters:  "@member",
+		description: "Kicks a mentioned member.",
 		permissions: []int{discordgo.PermissionKickMembers},
 	}}
 
@@ -21,20 +23,20 @@ func init() {
 func (k *kick) execute(message *discordgo.MessageCreate, session *discordgo.Session) {
 	author := message.Author.ID
 	mentionedMembers := message.Mentions
-	commandChannel := message.ChannelID
+	channel := message.ChannelID
 
 	// Return if no users mentioned in command
 	if len(mentionedMembers) <= 0 {
-		session.ChannelMessageSend(commandChannel, "<@"+author+"> you must mention a user to kick.")
+		session.ChannelMessageSend(channel, "<@"+author+"> "+k.wrongFormat())
 		return
 	}
 
 	// Kick all mentioned users
 	for _, member := range mentionedMembers {
 		if member.ID == author {
-			session.ChannelMessageSend(commandChannel, "<@"+member.ID+"> you cannot kick yourself.")
+			session.ChannelMessageSend(channel, "<@"+member.ID+"> you cannot kick yourself.")
 		} else {
-			session.ChannelMessageSend(commandChannel, "<@"+member.ID+"> was kicked.")
+			session.ChannelMessageSend(channel, "<@"+member.ID+"> was kicked.")
 			session.GuildMemberDelete(message.GuildID, member.ID)
 		}
 	}
