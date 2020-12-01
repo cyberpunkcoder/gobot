@@ -38,9 +38,9 @@ func (r *removeRole) execute(message *discordgo.MessageCreate, session *discordg
 
 	// Return if unable to create message
 	if err != nil {
-		session.ChannelMessageSend(commandChannel, "<@"+author+"> Role not found.")
+		session.ChannelMessageSend(commandChannel, "<@"+author+"> role not found.")
 		return
 	}
 
-	session.ChannelMessageSend(commandChannel, "<@"+author+"> Role removed.")
+	session.ChannelMessageSend(commandChannel, "<@"+author+"> role removed.")
 }
