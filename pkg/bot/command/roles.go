@@ -21,10 +21,10 @@ func init() {
 }
 
 func (r *roles) execute(message *discordgo.MessageCreate, session *discordgo.Session) {
-	commandChannel := message.ChannelID
+	channel := message.ChannelID
 
 	// Remove command messaage
-	session.ChannelMessageDelete(commandChannel, message.ID)
+	session.ChannelMessageDelete(channel, message.ID)
 
 	for _, catagory := range reactionrole.Catagories {
 
@@ -53,7 +53,7 @@ func (r *roles) execute(message *discordgo.MessageCreate, session *discordgo.Ses
 			// Save ID of the reaction role to reactionrolemessages.json to check for reactions later
 
 			emoji, _ := session.State.Emoji(message.GuildID, role.Emoji.ID)
-			err := session.MessageReactionAdd(commandChannel, msg.ID, emoji.APIName())
+			err := session.MessageReactionAdd(channel, msg.ID, emoji.APIName())
 
 			// Return if unable to create reaction
 			if err != nil {

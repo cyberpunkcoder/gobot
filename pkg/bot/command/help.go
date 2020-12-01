@@ -25,45 +25,37 @@ func (h *help) execute(message *discordgo.MessageCreate, session *discordgo.Sess
 	if len(mentionedMembers) == 0 {
 		output := "**Commands Avaliable to You**\n"
 		output += ">>> "
-
-		userPermissions, _ := session.State.UserChannelPermissions(author, channel)
-
-		for _, executable := range executables {
-			avaliable := true
-			for _, permission := range executable.getPermisssions() {
-				if userPermissions&permission == 0 {
-					avaliable = false
-					break
-				}
-			}
-			if avaliable {
-				output += "**" + executable.getName() + "** - *" + executable.getDescription() + "*\n"
-				output += executable.getUsage() + "\n"
-			}
-		}
-		session.ChannelMessageSend(message.ChannelID, output)
+		output += generateHelpFor(author, channel, session)
+		session.ChannelMessageSend(channel, output)
 
 	} else {
 		for _, member := range mentionedMembers {
 			output := "**Commands Avaliable to <@" + member.ID + ">**\n"
 			output += ">>> "
-
-			memberPermissions, _ := session.State.UserChannelPermissions(member.ID, channel)
-
-			for _, executable := range executables {
-				avaliable := true
-				for _, permission := range executable.getPermisssions() {
-					if memberPermissions&permission == 0 {
-						avaliable = false
-						break
-					}
-				}
-				if avaliable {
-					output += "**" + executable.getName() + "** - *" + executable.getDescription() + "*\n"
-					output += executable.getUsage() + "\n"
-				}
-			}
-			session.ChannelMessageSend(message.ChannelID, output)
+			output += generateHelpFor(member.ID, channel, session)
+			session.ChannelMessageSend(channel, output)
 		}
 	}
+}
+
+func generateHelpFor(memberID string, channelID string, session *discordgo.Session) string {
+	output := ""
+
+	userPermissions, _ := session.State.UserChannelPermissions(memberID, channelID)
+
+	for _, executable := range executables {
+		avaliable := true
+		for _, permission := range executable.getPermisssions() {
+			if userPermissions&permission == 0 {
+				avaliable = false
+				break
+			}
+		}
+
+		if avaliable {
+			output += "**" + executable.getName() + "** - *" + executable.getDescription() + "*\n"
+			output += executable.getUsage() + "\n"
+		}
+	}
+	return output
 }
