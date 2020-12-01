@@ -13,6 +13,7 @@ var (
 
 type executable interface {
 	getName() string
+	getUsage() string
 	getDescription() string
 	getPermisssions() []int
 	execute(message *discordgo.MessageCreate, session *discordgo.Session)
@@ -21,6 +22,7 @@ type executable interface {
 type command struct {
 	executable
 	name        string
+	parameters  string
 	description string
 	permissions []int
 }
@@ -40,6 +42,33 @@ func Execute(message *discordgo.MessageCreate, session *discordgo.Session) {
 			author := message.Author.ID
 			channel := message.ChannelID
 
+			botPermissions, err := session.State.UserChannelPermissions(session.State.User.ID, channel)
+
+			if err != nil {
+				session.ChannelMessageSend(channel, "<@"+author+"> unable to check my permissions.")
+				return
+			}
+
+			var missingBotPermissions []int
+			for _, p := range e.getPermisssions() {
+				if botPermissions&p == 0 {
+					missingBotPermissions = append(missingBotPermissions, p)
+				}
+			}
+
+			if len(missingBotPermissions) > 0 {
+				reply := "<@" + message.Author.ID + "> I don't have permission to execute this command."
+
+				/*
+					for _, p := range missingPermissions {
+						TODO: List permissions missing
+					}
+				*/
+
+				session.ChannelMessageSend(message.ChannelID, reply)
+				return
+			}
+
 			userPermissions, err := session.State.UserChannelPermissions(author, channel)
 
 			if err != nil {
@@ -47,14 +76,14 @@ func Execute(message *discordgo.MessageCreate, session *discordgo.Session) {
 				return
 			}
 
-			var missingPermissions []int
+			var missingUserPermissions []int
 			for _, p := range e.getPermisssions() {
 				if userPermissions&p == 0 {
-					missingPermissions = append(missingPermissions, p)
+					missingUserPermissions = append(missingUserPermissions, p)
 				}
 			}
 
-			if len(missingPermissions) > 0 {
+			if len(missingUserPermissions) > 0 {
 				reply := "<@" + message.Author.ID + "> you don't have permission to execute this command."
 
 				/*
@@ -74,12 +103,16 @@ func Execute(message *discordgo.MessageCreate, session *discordgo.Session) {
 
 	// If no matching command was found
 	if !found {
-		session.ChannelMessageSend(message.ChannelID, "<@"+message.Author.ID+"> unknown command \""+keyword+"\".")
+		session.ChannelMessageSend(message.ChannelID, "<@"+message.Author.ID+"> "+unknownCommand(keyword))
 	}
 }
 
 func (c *command) getName() string {
 	return c.name
+}
+
+func (c *command) getUsage() string {
+	return config.CommandPrefix + c.name + " " + c.parameters
 }
 
 func (c *command) getDescription() string {
@@ -88,4 +121,12 @@ func (c *command) getDescription() string {
 
 func (c *command) getPermisssions() []int {
 	return c.permissions
+}
+
+func (c *command) wrongFormat() string {
+	return "incorrectly formatted command, try ***" + c.getUsage() + "***."
+}
+
+func unknownCommand(keyword string) string {
+	return "unknown command ***" + config.CommandPrefix + keyword + "***."
 }
