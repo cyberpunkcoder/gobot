@@ -24,20 +24,20 @@ func (b *ban) execute(message *discordgo.MessageCreate, session *discordgo.Sessi
 
 	author := message.Author.ID
 	mentionedMembers := message.Mentions
-	commandChannel := message.ChannelID
+	channel := message.ChannelID
 
 	// Return if no users mentioned in command
 	if len(mentionedMembers) <= 0 {
-		session.ChannelMessageSend(commandChannel, "<@"+author+"> "+b.wrongFormat())
+		session.ChannelMessageSend(channel, "<@"+author+"> "+b.wrongFormat())
 		return
 	}
 
 	// Ban all mentioned users
 	for _, member := range mentionedMembers {
 		if member.ID == author {
-			session.ChannelMessageSend(commandChannel, "<@"+member.ID+"> you cannot ban yourself.")
+			session.ChannelMessageSend(channel, "<@"+member.ID+"> you cannot ban yourself.")
 		} else {
-			session.ChannelMessageSend(commandChannel, "<@"+member.ID+"> was banned.")
+			session.ChannelMessageSend(channel, "<@"+member.ID+"> was banned.")
 			session.GuildBanCreate(message.GuildID, member.ID, 0)
 		}
 	}
