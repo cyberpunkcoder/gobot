@@ -8,9 +8,10 @@ Assuming you have go installed and have a discord bot with a token, simply copy 
 You will be prompted to enter a discord bot token, command prefix and optionally the ID of a role users get when they join.
 That's it! Assuming everything went well, your bot should be online and ready to use!
 
-```git clone https://github.com/cyberpunkprogrammer/gobot.git && cd gobot/cmd/gobot && go build main.go && ./main```
+```git clone https://github.com/cyberpunkcoder/gobot.git && cd gobot/cmd/gobot && go build && ./gobot```
 ## Included Commands
 > The following examples assume you have set the command prefix to be "!"
+- <b>!help</b> or <b>!help @user</b> Bot will respond with a list of commands avaliable for you or mentioned user.
 - <b>!hello</b> Pings the bot, bot will reply hello back.
 - <b>!kick @user</b> Kicks a mentioned user from the guild.
 - <b>!ban @user</b> Bans a mentioned user from the guild forever.
