@@ -1,6 +1,7 @@
 package command
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 
@@ -23,42 +24,62 @@ func init() {
 }
 
 func (a *addRole) execute(message *discordgo.MessageCreate, session *discordgo.Session) {
+
+	fmt.Println(message.Content)
+
 	author := message.Author.ID
 	channel := message.ChannelID
 
 	roleRegex := regexp.MustCompile(`<@&(\d+)>`)
 	role := roleRegex.FindStringSubmatch(message.Content)
 
-	emojiRegex := regexp.MustCompile(`<(a?):(.+):(\d+)>`)
+	emojiRegex := regexp.MustCompile(`[\x{1F600}-\x{1F6FF}]|[\x{2600}-\x{26FF}]`)
 	emoji := emojiRegex.FindStringSubmatch(message.Content)
 
-	if len(role) != 2 || len(emoji) != 4 {
-		session.ChannelMessageSend(channel, "<@"+author+"> "+a.wrongFormat())
-		return
+	regionalRegex := regexp.MustCompile(`[\x{1F1E6}-\x{1F1FF}]`)
+	region := regionalRegex.FindStringSubmatch(message.Content)
+
+	for _, e := range region {
+		fmt.Println(e)
 	}
 
-	catagory := strings.ReplaceAll(message.Content, emoji[0], "")
-	catagory = strings.TrimLeft(catagory, " ")
-	catagory = strings.ReplaceAll(catagory, role[0], "")
+	customEmojiRegex := regexp.MustCompile(`<(a?):(.+):(\d+)>`)
+	customEmoji := customEmojiRegex.FindStringSubmatch(message.Content)
 
-	spaceRegex := regexp.MustCompile(`\s(.*)`)
-	catagory = spaceRegex.FindString(catagory)
-	catagory = strings.TrimSpace(catagory)
+	if len(role) == 2 {
+		catagory := message.Content
 
-	newRole := reactionrole.Role{
-		ID: role[1],
-		Emoji: reactionrole.Emoji{
-			Prefix: emoji[1],
-			Name:   emoji[2],
-			ID:     emoji[3],
-		},
+		if len(emoji) == 1 {
+			catagory = strings.ReplaceAll(message.Content, emoji[0], "")
+		} else if len(customEmoji) == 4 {
+			catagory = strings.ReplaceAll(message.Content, customEmoji[0], "")
+		} else if len(region) == 1 || len(region) == 2 {
+			catagory = strings.ReplaceAll(message.Content, region[0], "")
+		}
+
+		catagory = strings.TrimLeft(catagory, " ")
+		catagory = strings.ReplaceAll(catagory, role[0], "")
+
+		spaceRegex := regexp.MustCompile(`\s(.*)`)
+		catagory = spaceRegex.FindString(catagory)
+		catagory = strings.TrimSpace(catagory)
+
+		newRole := reactionrole.Role{
+			ID: role[1],
+			Emoji: reactionrole.Emoji{
+				Prefix: customEmoji[1],
+				Name:   customEmoji[2],
+				ID:     customEmoji[3],
+			},
+		}
+
+		reactionrole.SaveRole(catagory, newRole)
+
+		output := "<@" + author + "> role added.\n"
+		output += ">>> "
+		output += "<" + customEmoji[1] + ":" + customEmoji[2] + ":" + customEmoji[3] + "> - <@&" + role[1] + ">\n"
+
+		session.ChannelMessageSend(message.ChannelID, output)
 	}
-
-	reactionrole.SaveRole(catagory, newRole)
-
-	output := "<@" + author + "> role added.\n"
-	output += ">>> "
-	output += "<" + emoji[1] + ":" + emoji[2] + ":" + emoji[3] + "> - <@&" + role[1] + ">\n"
-
-	session.ChannelMessageSend(message.ChannelID, output)
+	session.ChannelMessageSend(channel, "<@"+author+"> "+a.wrongFormat())
 }
