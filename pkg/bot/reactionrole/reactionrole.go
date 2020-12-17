@@ -196,3 +196,21 @@ func saveRoles() error {
 
 	return nil
 }
+
+// APIName eturns the API name for an emoji
+func (emoji Emoji) APIName() string {
+	if emoji.ID != "" {
+		return emoji.Name + ":" + emoji.ID
+	}
+
+	return emoji.Name
+}
+
+// ToString returns the strng value for an emoji
+func (emoji Emoji) ToString() string {
+	if emoji.ID != "" {
+		return "<" + emoji.Prefix + ":" + emoji.Name + ":" + emoji.ID + ">"
+	}
+
+	return emoji.Name
+}
