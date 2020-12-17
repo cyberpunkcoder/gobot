@@ -31,7 +31,6 @@ func (r *roles) execute(message *discordgo.MessageCreate, session *discordgo.Ses
 	for _, catagory := range reactionrole.Catagories {
 		for _, role := range catagory.Role {
 			if role.Emoji.ID != "" {
-
 				err := session.MessageReactionAdd(checkingMessage.ChannelID, checkingMessage.ID, role.Emoji.APIName())
 
 				// Return if unable to create reaction

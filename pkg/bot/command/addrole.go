@@ -1,7 +1,6 @@
 package command
 
 import (
-	"fmt"
 	"log"
 	"regexp"
 	"strconv"
@@ -93,8 +92,6 @@ func (a *addRole) execute(message *discordgo.MessageCreate, session *discordgo.S
 		spaceRegex := regexp.MustCompile(`\s(.*)`)
 		catagory = spaceRegex.FindString(catagory)
 		catagory = strings.TrimSpace(catagory)
-
-		fmt.Println(catagory)
 
 		newRole := reactionrole.Role{
 			ID:    role[1],
