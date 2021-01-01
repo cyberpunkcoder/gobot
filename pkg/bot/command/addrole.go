@@ -31,25 +31,26 @@ func (a *addRole) execute(message *discordgo.MessageCreate, session *discordgo.S
 	roleRegex := regexp.MustCompile(`<@&(\d+)>`)
 	role := roleRegex.FindStringSubmatch(message.Content)
 
-	emojiRegex := regexp.MustCompile(`[\x{1F600}-\x{1F6FF}]|[\x{2600}-\x{26FF}]`)
-	emoji := emojiRegex.FindStringSubmatch(message.Content)
+	emojiRegex := regexp.MustCompile(`[\x{00A9}-\x{1F6FF}|[\x{2600}-\x{26FF}]|\x{200D}`)
+	emoji := emojiRegex.FindAllStringSubmatch(message.Content, -1)
 
 	customEmojiRegex := regexp.MustCompile(`<(a?):(.+):(\d+)>`)
 	customEmoji := customEmojiRegex.FindStringSubmatch(message.Content)
-
-	regionalRegex := regexp.MustCompile(`[\x{1F1E6}-\x{1F1FF}]`)
-	region := regionalRegex.FindAllStringSubmatch(message.Content, -1)
 
 	if len(role) == 2 {
 		catagory := message.Content
 		newEmoji := reactionrole.Emoji{}
 
-		if len(emoji) == 1 {
-			catagory = strings.ReplaceAll(message.Content, emoji[0], "")
-			newEmoji.Name = emoji[0]
-
+		if len(emoji) > 0 {
+			// Loop through slice for a zwj combo emoji
+			for _, i := range emoji {
+				for j := 0; j < len(i); j++ {
+					catagory = strings.ReplaceAll(catagory, i[j], "")
+					newEmoji.Name += i[j]
+				}
+			}
 		} else if len(customEmoji) == 4 {
-			catagory = strings.ReplaceAll(message.Content, customEmoji[0], "")
+			catagory = strings.ReplaceAll(catagory, customEmoji[0], "")
 			newEmoji.Prefix = customEmoji[1]
 			newEmoji.Name = customEmoji[2]
 			newEmoji.ID = customEmoji[3]
@@ -68,19 +69,8 @@ func (a *addRole) execute(message *discordgo.MessageCreate, session *discordgo.S
 				log.Println(err)
 				return
 			}
-
 			// Remove checking message
 			session.ChannelMessageDelete(checkingMessage.ChannelID, checkingMessage.ID)
-
-		} else if len(region) > 1 {
-			if len(region) == 1 {
-				catagory = strings.ReplaceAll(message.Content, region[0][0], "")
-				newEmoji.Name = region[0][0]
-			} else if len(region) == 2 {
-				name := region[0][0] + region[1][0]
-				catagory = strings.ReplaceAll(message.Content, name, "")
-				newEmoji.Name = name
-			}
 		} else {
 			// Wrong emoji format
 			session.ChannelMessageSend(channel, "<@"+author+"> "+a.wrongFormat())
@@ -92,7 +82,6 @@ func (a *addRole) execute(message *discordgo.MessageCreate, session *discordgo.S
 		spaceRegex := regexp.MustCompile(`\s(.*)`)
 		catagory = spaceRegex.FindString(catagory)
 		catagory = strings.TrimSpace(catagory)
-
 		newRole := reactionrole.Role{
 			ID:    role[1],
 			Emoji: newEmoji,
