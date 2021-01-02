@@ -18,8 +18,8 @@ var (
 	// Messages messageid of all messages users react too to get roles
 	Messages message
 
-	reactionRoleFile         = "/json/role/reactionroles.json"
-	reactionRoleMessagesFile = "/json/role/reactionrolemessages.json"
+	reactionRoleFile         = "/json/reactionroles.json"
+	reactionRoleMessagesFile = "/json/reactionrolemessages.json"
 )
 
 // Catagory of reaction roles each containing a number of reaction roles
