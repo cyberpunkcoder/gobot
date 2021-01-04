@@ -27,6 +27,7 @@ import (
 
 	"github.com/cyberpunkprogrammer/gobot/pkg/bot"
 	"github.com/cyberpunkprogrammer/gobot/pkg/bot/config"
+	"github.com/cyberpunkprogrammer/gobot/pkg/bot/filter"
 	"github.com/cyberpunkprogrammer/gobot/pkg/bot/reactionrole"
 )
 
@@ -47,6 +48,7 @@ func main() {
 	// Set relative path to packages that access json files
 	config.BinPath = BinPath
 	reactionrole.BinPath = BinPath
+	filter.BinPath = BinPath
 
 	// Load configuration for bot and api
 	err = config.LoadConfig()
@@ -76,6 +78,14 @@ func main() {
 	// Return if error loading reactionrroles.json
 	if err != nil {
 		log.Println("Error loading reaction role messages,", err)
+	}
+
+	// Load filters to be muted for
+	err = filter.LoadFilters()
+
+	// Return if error loading filters.json
+	if err != nil {
+		log.Println("Error loading filters,", err)
 	}
 
 	bot.Start()

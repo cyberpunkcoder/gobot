@@ -24,23 +24,23 @@ func init() {
 func (r *removeRole) execute(message *discordgo.MessageCreate, session *discordgo.Session) {
 
 	author := message.Author.ID
-	commandChannel := message.ChannelID
+	channel := message.ChannelID
 
 	roleRegex := regexp.MustCompile(`<@&(\d+)>`)
 	role := roleRegex.FindStringSubmatch(message.Content)
 
 	if len(role) < 2 {
-		session.ChannelMessageSend(commandChannel, "<@"+author+"> "+r.wrongFormat())
+		session.ChannelMessageSend(channel, "<@"+author+"> "+r.wrongFormat())
 		return
 	}
 
 	err := reactionrole.RemoveRole(role[1])
 
-	// Return if unable to create message
+	// Return if unable to remove role
 	if err != nil {
-		session.ChannelMessageSend(commandChannel, "<@"+author+"> role not found.")
+		session.ChannelMessageSend(channel, "<@"+author+"> role not found.")
 		return
 	}
 
-	session.ChannelMessageSend(commandChannel, "<@"+author+"> role removed.")
+	session.ChannelMessageSend(channel, "<@"+author+"> role removed.")
 }
