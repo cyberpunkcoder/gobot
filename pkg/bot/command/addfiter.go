@@ -22,4 +22,5 @@ func (a *addFilter) execute(message *discordgo.MessageCreate, session *discordgo
 	//author := message.Author.ID
 	//channel := message.ChannelID
 
+	filter := Filter{}
 }

@@ -155,11 +155,10 @@ func SaveMessage(messageid string) {
 	saveMessages()
 }
 
-// saveRoles saves the current state of the reaction role messages reactionrolemessages.json
 func saveMessages() error {
 	roleMessagesJSON, err := json.MarshalIndent(Messages, "", " ")
 
-	// Return if there was an error marshaling reactionrolemessages.json
+	// Return if there was an error marshaling Messages
 	if err != nil {
 		log.Println(err.Error())
 		return err
