@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"log"
 	"strings"
+
+	"github.com/bwmarrin/discordgo"
 )
 
 var (
@@ -13,24 +15,32 @@ var (
 	BinPath string
 
 	// Filters that members will be muted for messaging
-	Filters []Filter
+	Filters []filter
 
-	filtersFile       = "/json/filters.json"
-	filtersNotifyFile = "/json/filtersnotify.json"
+	// Alerts members if a filter is violated
+	Alerts []alert
+
+	filtersFile = "/json/filters.json"
+	alertsFile  = "/json/filteralerts.json"
 )
 
 // Filter phrase or word members will be muted for messaging
-type Filter struct {
+type filter struct {
 	Text string `json:"text"`
 }
 
-// LoadFilters and filters notify from filters.json and filtersnotify.json
+//alert member that will be alerted if filtr is violated
+type alert struct {
+	ID string `json:"ID"`
+}
+
+// LoadFilters and filters alert from json file
 func LoadFilters() error {
-	log.Println("Loading filters")
+	log.Println("Loading Filters")
 
 	file, err := ioutil.ReadFile(BinPath + filtersFile)
 
-	// Create new reactionroles.json file if none exists, returns for other errors
+	// Create new json file if none exists, returns for other errors
 	if err != nil {
 		if strings.Contains(err.Error(), "no") && strings.Contains(err.Error(), "directory") {
 			saveFilters()
@@ -41,30 +51,43 @@ func LoadFilters() error {
 
 	err = json.Unmarshal(file, &Filters)
 
-	// Return if there was an error unmarshaling reactionrroles.json
+	// Return if there was an error unmarshaling json
 	if err != nil {
 		return err
 	}
 
+	file, err = ioutil.ReadFile(BinPath + alertsFile)
+
+	// Create new json file if none exists, returns for other errors
+	if err != nil {
+		if strings.Contains(err.Error(), "no") && strings.Contains(err.Error(), "directory") {
+			saveAlerts()
+			return nil
+		}
+		return err
+	}
+
+	err = json.Unmarshal(file, &Alerts)
+
 	return nil
 }
 
-// SaveFilter to filter.json
+// SaveFilter to json file
 func SaveFilter(text string) error {
 	for _, filter := range Filters {
 		if filter.Text == text {
-			// If the filter already exists return an error.
+			// If the filter already exists return an error
 			return errors.New("Filter already exists \"" + text + "\"")
 		}
 	}
 
-	newFilter := Filter{Text: text}
+	newFilter := filter{Text: text}
 	Filters = append(Filters, newFilter)
 	saveFilters()
 	return nil
 }
 
-// RemoveFilter from filter.json
+// RemoveFilter from json file
 func RemoveFilter(text string) error {
 	for i, filter := range Filters {
 		if filter.Text == text {
@@ -76,12 +99,43 @@ func RemoveFilter(text string) error {
 			return nil
 		}
 	}
-	// If the filter was not found return an error.
+	// If the filter was not found return an error
 	return errors.New("Cannot find filter \"" + text + "\"")
 }
 
+// SaveAlert user will be alerted if a mute filter is violated
+func SaveAlert(user discordgo.User) error {
+	for _, existingUser := range Alerts {
+		if user.ID == existingUser.ID {
+			// If the filter already exists return an error
+			return errors.New("Alert for user \"" + user.ID + "\" already exists")
+		}
+	}
+
+	newAlert := alert{ID: user.ID}
+	Alerts = append(Alerts, newAlert)
+	saveAlerts()
+	return nil
+}
+
+// RemoveAlert from json file
+func RemoveAlert(user discordgo.User) error {
+	for i, alerts := range Alerts {
+		if alerts.ID == user.ID {
+			// Remove user from Alerts
+			Alerts[i] = Alerts[len(Alerts)-1]
+			Alerts = Alerts[:len(Alerts)-1]
+
+			saveAlerts()
+			return nil
+		}
+	}
+	// If the filter was not found return an error
+	return errors.New("Cannot find alert for user \"" + user.ID + "\"")
+}
+
 func saveFilters() error {
-	filtersJSON, err := json.MarshalIndent(Filters, "", " ")
+	FiltersJSON, err := json.MarshalIndent(Filters, "", " ")
 
 	// Return if there was an error marshaling Filters
 	if err != nil {
@@ -89,9 +143,29 @@ func saveFilters() error {
 		return err
 	}
 
-	err = ioutil.WriteFile(BinPath+filtersFile, filtersJSON, 0644)
+	err = ioutil.WriteFile(BinPath+filtersFile, FiltersJSON, 0644)
 
-	// Return if there was an error writing to filters.json
+	// Return if there was an error writing to json file
+	if err != nil {
+		log.Println(err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func saveAlerts() error {
+	AlertsJSON, err := json.MarshalIndent(Alerts, "", " ")
+
+	// Return if there was an error marshaling filters
+	if err != nil {
+		log.Println(err.Error())
+		return err
+	}
+
+	err = ioutil.WriteFile(BinPath+alertsFile, AlertsJSON, 0644)
+
+	// Return if there was an error writing to json file
 	if err != nil {
 		log.Println(err.Error())
 		return err
