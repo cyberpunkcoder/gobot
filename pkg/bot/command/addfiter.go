@@ -9,13 +9,13 @@ type addFilter struct {
 }
 
 func init() {
-	addRole := addRole{command{
+	addFilter := addFilter{command{
 		name:        "addfilter",
 		parameters:  "word or phrase",
-		description: "Adds word or phrase filter to mute members.",
+		description: "Adds word or phrase mute filter.",
 		permissions: []int{discordgo.PermissionVoiceMuteMembers},
 	}}
-	executables = append(executables, &addRole)
+	executables = append(executables, &addFilter)
 }
 
 func (a *addFilter) execute(message *discordgo.MessageCreate, session *discordgo.Session) {
