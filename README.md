@@ -26,7 +26,7 @@ That's it! Assuming everything went well, your bot should be online and ready to
 
 ### Reaction Roles
 - ```!roles``` Creates a reaction role selection menu with each reaction role in a catagory and associated emoji.
-- ```!addrole @role :emoji: Catagory ``` Creates a reaction role with an emoji and catagory.
+- ```!addrole @role :emoji: Catagory``` Creates a reaction role with an emoji and catagory.
 - ```!removerole @role``` Removes a role from the reaction role menu.
 
 ### Word or Phrase Filters
