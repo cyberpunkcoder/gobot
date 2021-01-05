@@ -3,7 +3,6 @@ package filter
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"strings"
@@ -78,7 +77,6 @@ func Check(message *discordgo.MessageCreate, session *discordgo.Session) {
 				for _, alert := range Alerts {
 					alertUser, _ := session.User(alert.ID)
 					if !alertUser.Bot {
-						fmt.Println(alert.ID)
 						alertChannel, err := session.UserChannelCreate(alert.ID)
 
 						if err != nil {
