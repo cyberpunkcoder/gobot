@@ -8,6 +8,8 @@ import (
 	"log"
 	"os"
 	"strings"
+
+	"github.com/bwmarrin/discordgo"
 )
 
 var (
@@ -23,6 +25,9 @@ var (
 	// JoinRole role members are given after joining guild
 	JoinRole string
 
+	// MuteRole role members are given if they are muted
+	MuteRole string
+
 	// configFile is the file which contians the program startup configuration
 	configFile = "/json/config.json"
 )
@@ -31,6 +36,7 @@ type configStruct struct {
 	DiscordToken  string
 	CommandPrefix string
 	JoinRole      string
+	MuteRole      string
 }
 
 // LoadConfig read and load the config.json file
@@ -55,6 +61,7 @@ func LoadConfig() error {
 	DiscordToken = load.DiscordToken
 	CommandPrefix = load.CommandPrefix
 	JoinRole = load.JoinRole
+	MuteRole = load.MuteRole
 
 	return nil
 }
@@ -66,6 +73,7 @@ func SaveConfig() error {
 		DiscordToken:  DiscordToken,
 		CommandPrefix: CommandPrefix,
 		JoinRole:      JoinRole,
+		MuteRole:      MuteRole,
 	}
 
 	configJSON, err := json.MarshalIndent(save, "", " ")
@@ -77,7 +85,33 @@ func SaveConfig() error {
 
 	err = ioutil.WriteFile(BinPath+configFile, configJSON, 0644)
 
-	// Return if there was an error writing to the file
+	// Return if there was an error writing to the json file
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SaveJoinRole to json file
+func SaveJoinRole(role discordgo.Role) error {
+	JoinRole = role.ID
+	err := SaveConfig()
+
+	// Return if there was an error saving the join role
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SaveMuteRole to json file
+func SaveMuteRole(role discordgo.Role) error {
+	MuteRole = role.ID
+	err := SaveConfig()
+
+	// Return if there was an error saving the mute role
 	if err != nil {
 		return err
 	}
@@ -113,16 +147,6 @@ func Create() {
 			fmt.Print("Enter command prefix (For example '!'): ")
 			commandPrefix, err := reader.ReadString('\n')
 			CommandPrefix = strings.TrimRight(commandPrefix, "\n")
-
-			if err != nil {
-				log.Println(err)
-				return
-			}
-
-			// Obtain role id from user and store into variable
-			fmt.Print("Enter role ID users get after joining (blank for none): ")
-			joinRole, err := reader.ReadString('\n')
-			JoinRole = strings.TrimRight(joinRole, "\n")
 
 			if err != nil {
 				log.Println(err)

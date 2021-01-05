@@ -103,7 +103,7 @@ func Execute(message *discordgo.MessageCreate, session *discordgo.Session) {
 
 	// If no matching command was found
 	if !found {
-		session.ChannelMessageSend(message.ChannelID, "<@"+message.Author.ID+"> "+unknownCommand(keyword))
+		session.ChannelMessageSend(message.ChannelID, "<@"+message.Author.ID+"> unknown command, try **!help**.")
 	}
 }
 
@@ -125,8 +125,4 @@ func (c *command) getPermisssions() []int {
 
 func (c *command) wrongFormat() string {
 	return "incorrectly formatted command, try **" + c.getUsage() + "**."
-}
-
-func unknownCommand(keyword string) string {
-	return "unknown command **" + config.CommandPrefix + keyword + "**, try **!help**."
 }

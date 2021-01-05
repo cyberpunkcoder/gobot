@@ -1,6 +1,6 @@
 /*
 Gobot, a robust expandable bot that interfaces with Discord go API!
-Copyright (C) 2020 github.com/cyberpunkprogrammer
+Copyright (C) 2020 github.com/cyberpunkcoder
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

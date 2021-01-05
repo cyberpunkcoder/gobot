@@ -7,6 +7,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/cyberpunkprogrammer/gobot/pkg/bot/command"
 	"github.com/cyberpunkprogrammer/gobot/pkg/bot/config"
+	"github.com/cyberpunkprogrammer/gobot/pkg/bot/filter"
 	"github.com/cyberpunkprogrammer/gobot/pkg/bot/reactionrole"
 )
 
@@ -26,8 +27,24 @@ func guildMemberAdd(session *discordgo.Session, user *discordgo.GuildMemberAdd) 
 
 // messageCreate is called whenever a message has been created
 func messageCreate(session *discordgo.Session, message *discordgo.MessageCreate) {
-	if strings.HasPrefix(message.Content, config.CommandPrefix) {
-		command.Execute(message, session)
+	// Ensure that message was not created by bot itself
+	if message.Author.ID != session.State.User.ID {
+		// Check if message is a bot command
+		if strings.HasPrefix(message.Content, config.CommandPrefix) {
+			command.Execute(message, session)
+		}
+
+		// Check if message contains a filter
+		for _, filter := range filter.Filters {
+			if strings.Contains(message.Content, filter.Text) {
+				// Delete the member's message if a filter is violated
+				session.ChannelMessageDelete(message.ChannelID, message.ID)
+				if config.MuteRole != "" {
+					// Give the member the mute role if a filter is violated
+					session.GuildMemberRoleAdd(message.GuildID, message.Author.ID, config.MuteRole)
+				}
+			}
+		}
 	}
 }
 
