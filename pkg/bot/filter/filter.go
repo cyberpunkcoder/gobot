@@ -77,11 +77,7 @@ func Check(message *discordgo.MessageCreate, session *discordgo.Session) {
 				for _, alert := range Alerts {
 					alertUser, _ := session.User(alert.ID)
 					if !alertUser.Bot {
-						alertChannel, err := session.UserChannelCreate(alert.ID)
-
-						if err != nil {
-							log.Println(err)
-						}
+						alertChannel, _ := session.UserChannelCreate(alert.ID)
 
 						alertText := "<@" + alert.ID + ">, member <@" + author + "> violated a filter.\n"
 						alertText += ">>> "
@@ -113,7 +109,6 @@ func Check(message *discordgo.MessageCreate, session *discordgo.Session) {
 				session.GuildMemberRoleAdd(message.GuildID, message.Author.ID, config.MuteRole)
 				output += "***YOU HAVE BEEN MUTED BECAUSE OF THIS!***\n"
 			}
-
 			session.ChannelMessageSend(offenderChannel.ID, output)
 		}
 	}
