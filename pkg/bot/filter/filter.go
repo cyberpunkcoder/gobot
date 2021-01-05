@@ -54,7 +54,7 @@ func Check(message *discordgo.MessageCreate, session *discordgo.Session) {
 		author := message.Author.ID
 
 		if !strings.HasPrefix(message.Content, config.CommandPrefix) {
-			output := "<@" + author + ">, I have detected that you said a bad thing so I removed it.\n"
+			output := "<@" + author + ">, I detected you said a bad thing and I removed it.\n"
 			output += ">>> "
 			output += "You said ***" + message.Content + "***\n"
 
@@ -85,7 +85,7 @@ func Check(message *discordgo.MessageCreate, session *discordgo.Session) {
 							log.Println(err)
 						}
 
-						alertText := "<@" + alert.ID + ">, member <@" + author + "> has violated a filter.\n"
+						alertText := "<@" + alert.ID + ">, member <@" + author + "> violated a filter.\n"
 						alertText += ">>> "
 						alertText += "They said ***" + message.Content + "***\n"
 
@@ -107,7 +107,7 @@ func Check(message *discordgo.MessageCreate, session *discordgo.Session) {
 						session.ChannelMessageSend(alertChannel.ID, alertText)
 					}
 				}
-				output += "I have alerted the appropriate members so they can review this.\n"
+				output += "I alerted the appropriate members so they can review this.\n"
 			}
 
 			if config.MuteRole != "" {
