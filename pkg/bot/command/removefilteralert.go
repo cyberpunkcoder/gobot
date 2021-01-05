@@ -13,7 +13,7 @@ func init() {
 	removeFilterAlert := removeFilterAlert{command{
 		name:        "removefilteralert",
 		parameters:  "(optional: @user)",
-		description: "Removes alert for you or user of filter violation.",
+		description: "Removes alert for you or mentioned user for filter violations.",
 		permissions: []int{discordgo.PermissionVoiceMuteMembers},
 	}}
 	executables = append(executables, &removeFilterAlert)

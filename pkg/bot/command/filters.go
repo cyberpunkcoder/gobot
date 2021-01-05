@@ -25,7 +25,7 @@ func (a *filters) execute(message *discordgo.MessageCreate, session *discordgo.S
 	output += ">>> "
 
 	for _, filter := range filter.Filters {
-		output += "**" + filter.Text + "**\n"
+		output += "*" + filter.Text + "*\n"
 	}
 
 	session.ChannelMessageSend(channel, output)

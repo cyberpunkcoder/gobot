@@ -39,7 +39,7 @@ func messageCreate(session *discordgo.Session, message *discordgo.MessageCreate)
 			if strings.Contains(message.Content, filter.Text) {
 				// Delete the member's message if a filter is violated
 				session.ChannelMessageDelete(message.ChannelID, message.ID)
-				if config.MuteRole != "" {
+				if config.MuteRole != "" && !strings.HasPrefix(message.Content, config.CommandPrefix) {
 					// Give the member the mute role if a filter is violated
 					session.GuildMemberRoleAdd(message.GuildID, message.Author.ID, config.MuteRole)
 				}

@@ -13,7 +13,7 @@ func init() {
 	addFilterAlert := addFilterAlert{command{
 		name:        "addfilteralert",
 		parameters:  "(optional: @user)",
-		description: "Adds alert for you or user of filter violation.",
+		description: "Adds alert for you or mentioned user for filter violations.",
 		permissions: []int{discordgo.PermissionVoiceMuteMembers},
 	}}
 	executables = append(executables, &addFilterAlert)

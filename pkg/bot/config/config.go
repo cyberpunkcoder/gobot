@@ -8,8 +8,6 @@ import (
 	"log"
 	"os"
 	"strings"
-
-	"github.com/bwmarrin/discordgo"
 )
 
 var (
@@ -94,8 +92,8 @@ func SaveConfig() error {
 }
 
 // SaveJoinRole to json file
-func SaveJoinRole(role discordgo.Role) error {
-	JoinRole = role.ID
+func SaveJoinRole(id string) error {
+	JoinRole = id
 	err := SaveConfig()
 
 	// Return if there was an error saving the join role
@@ -107,8 +105,8 @@ func SaveJoinRole(role discordgo.Role) error {
 }
 
 // SaveMuteRole to json file
-func SaveMuteRole(role discordgo.Role) error {
-	MuteRole = role.ID
+func SaveMuteRole(id string) error {
+	MuteRole = id
 	err := SaveConfig()
 
 	// Return if there was an error saving the mute role
