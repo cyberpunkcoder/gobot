@@ -3,11 +3,13 @@ package filter
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/cyberpunkprogrammer/gobot/pkg/bot/config"
 )
 
 var (
@@ -32,6 +34,91 @@ type filter struct {
 //alert member that will be alerted if filtr is violated
 type alert struct {
 	ID string `json:"ID"`
+}
+
+// Check a message against the filter
+func Check(message *discordgo.MessageCreate, session *discordgo.Session) {
+	var violations []string
+	for _, filter := range Filters {
+		if strings.Contains(message.Content, filter.Text) && !message.Author.Bot {
+			violations = append(violations, filter.Text)
+		}
+	}
+
+	if len(violations) > 0 {
+		// Delete the member's message if a filter is violated
+		session.ChannelMessageDelete(message.ChannelID, message.ID)
+
+		offenderChannel, _ := session.UserChannelCreate(message.Author.ID)
+		guild, _ := session.Guild(message.GuildID)
+		author := message.Author.ID
+
+		if !strings.HasPrefix(message.Content, config.CommandPrefix) {
+			output := "<@" + author + ">, I have detected that you said a bad thing so I removed it.\n"
+			output += ">>> "
+			output += "You said ***" + message.Content + "***\n"
+
+			if violations[0] != message.Content {
+				output += "I detected "
+				for i := 0; i < len(violations); i++ {
+					output += "***" + violations[i] + "***"
+					if len(violations) > 1 {
+						if i == len(violations)-2 {
+							output += " and "
+						} else if i < len(violations)-1 {
+							output += ", "
+						}
+					}
+				}
+				output += " in that.\n"
+			}
+			output += "Detected in ***" + guild.Name + "*** in the channel <#" + message.ChannelID + ">\n"
+
+			if len(Alerts) > 0 {
+				for _, alert := range Alerts {
+					alertUser, _ := session.User(alert.ID)
+					if !alertUser.Bot {
+						fmt.Println(alert.ID)
+						alertChannel, err := session.UserChannelCreate(alert.ID)
+
+						if err != nil {
+							log.Println(err)
+						}
+
+						alertText := "<@" + alert.ID + ">, member <@" + author + "> has violated a filter.\n"
+						alertText += ">>> "
+						alertText += "They said ***" + message.Content + "***\n"
+
+						if violations[0] != message.Content {
+							alertText += "I detected "
+							for i := 0; i < len(violations); i++ {
+								alertText += "***" + violations[i] + "***"
+								if len(violations) > 1 {
+									if i == len(violations)-2 {
+										alertText += " and "
+									} else if i < len(violations)-1 {
+										alertText += ", "
+									}
+								}
+							}
+							alertText += " in that.\n"
+						}
+						alertText += "Detected in ***" + guild.Name + "*** in the channel <#" + message.ChannelID + ">\n"
+						session.ChannelMessageSend(alertChannel.ID, alertText)
+					}
+				}
+				output += "I have alerted the appropriate members so they can review this.\n"
+			}
+
+			if config.MuteRole != "" {
+				// Give the member the mute role if a filter is violated
+				session.GuildMemberRoleAdd(message.GuildID, message.Author.ID, config.MuteRole)
+				output += "***YOU HAVE BEEN MUTED BECAUSE OF THIS!***\n"
+			}
+
+			session.ChannelMessageSend(offenderChannel.ID, output)
+		}
+	}
 }
 
 // LoadFilters and filters alert from json file
