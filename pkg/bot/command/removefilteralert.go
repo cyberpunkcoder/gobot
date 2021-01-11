@@ -12,7 +12,7 @@ type removeFilterAlert struct {
 func init() {
 	removeFilterAlert := removeFilterAlert{command{
 		name:        "removefilteralert",
-		parameters:  "(optional: @user)",
+		parameters:  "(optional: @member)",
 		description: "Removes alert for you or mentioned user for filter violations.",
 		permissions: []int{discordgo.PermissionVoiceMuteMembers},
 	}}

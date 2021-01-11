@@ -12,7 +12,7 @@ type addFilterAlert struct {
 func init() {
 	addFilterAlert := addFilterAlert{command{
 		name:        "addfilteralert",
-		parameters:  "(optional: @user)",
+		parameters:  "(optional: @member)",
 		description: "Adds alert for you or mentioned user for filter violations.",
 		permissions: []int{discordgo.PermissionVoiceMuteMembers},
 	}}

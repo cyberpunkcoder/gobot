@@ -12,17 +12,22 @@ That's it! Assuming everything went well, your bot should be online and ready to
 ## Included Commands
 > The following examples assume you have set the command prefix to be "!"
 ### Auto Roles
-- ```!setjoinrole @role``` Sets the role users will be given when they join.
-- ```!removejoinrole``` Removes the role users will be given when they join.
-- ```!setmuterole @role``` Sets the role users will be given when they are muted.
-- ```!removemuterole``` Removes the role users will be given when they are muted.
+- ```!setjoinrole @role``` Sets the role members will be given when they join.
+- ```!removejoinrole``` Removes the role members will be given when they join.
+- ```!setmuterole @role``` Sets the role members will be given when they are muted.
+- ```!removemuterole``` Removes the role members will be given when they are muted.
+
+### Welcome Message
+- ```!welcome``` or ```!welcome @member``` Bot will send welcome message in channel or addressed to member.
+- ```!setwelcomemessage welcome message``` Sets the welcome message members will be sent in DM when they join.
+- ```!removewelcomemessage``` Removes the welcome message.
 
 ### User Tools
-- ```!help``` or ```!help @user``` Bot will respond with a list of commands avaliable for you or mentioned user.
+- ```!help``` or ```!help @member``` Bot will respond with a list of commands avaliable for you or mentioned member.
 - ```!hello``` Pings the bot, bot will reply hello back.
-- ```!kick @user``` Kicks a mentioned user from the guild.
-- ```!ban @user``` Bans a mentioned user from the guild forever.
-- ```!purge``` or ```!purge @user``` Removes last 100 messages from all users or mentioned user in channel.
+- ```!kick @member``` Kicks a mentioned member from the guild.
+- ```!ban @member``` Bans a mentioned member from the guild forever.
+- ```!purge``` or ```!purge @member``` Removes last 100 messages from all members or mentioned member in channel.
 
 ### Reaction Roles
 - ```!roles``` Creates a reaction role selection menu with each reaction role in a catagory and associated emoji.
@@ -30,10 +35,10 @@ That's it! Assuming everything went well, your bot should be online and ready to
 - ```!removerole @role``` Removes a role from the reaction role menu.
 
 ### Word or Phrase Filters
-- ```!addfilter word or phrase``` Creates a message filter that if volated a message will be removed and user muted if mute role set.
+- ```!addfilter word or phrase``` Creates a message filter that if volated a message will be removed and member muted if mute role set.
 - ```!removefilter word or phrase``` Removes a message filter.
-- ```!addfilteralert``` or ```!addfilteralert @user``` Adds you or user to a list of people to be alerted if a filter is violated.
-- ```!removefilteralert``` or ```!removefilteralert @user``` Removes you or user to a list of people to be alerted if a filter is violated.
+- ```!addfilteralert``` or ```!addfilteralert @member``` Adds you or member to a list of people to be alerted if a filter is violated.
+- ```!removefilteralert``` or ```!removefilteralert @member``` Removes you or member to a list of people to be alerted if a filter is violated.
 - ```!filters``` Lists word or phrase filters.
 
 ## Credit

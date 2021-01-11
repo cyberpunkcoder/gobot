@@ -21,7 +21,14 @@ func ready(session *discordgo.Session, ready *discordgo.Ready) {
 // guildMemberAdd is called when a member joins the guild
 func guildMemberAdd(session *discordgo.Session, user *discordgo.GuildMemberAdd) {
 	if config.JoinRole != "" {
+		// Give a member the join role
 		session.GuildMemberRoleAdd(user.GuildID, user.User.ID, config.JoinRole)
+	}
+
+	if config.WelcomeMessage != "" {
+		// Send welcome message to new member
+		welcomeChannel, _ := session.UserChannelCreate(user.User.ID)
+		session.ChannelMessageSend(welcomeChannel.ID, "<@"+user.User.ID+">, "+config.WelcomeMessage)
 	}
 }
 

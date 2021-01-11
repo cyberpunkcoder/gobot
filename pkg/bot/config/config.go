@@ -26,15 +26,19 @@ var (
 	// MuteRole role members are given if they are muted
 	MuteRole string
 
+	// WelcomeMessage members are sent after joining the guild
+	WelcomeMessage string
+
 	// configFile is the file which contians the program startup configuration
 	configFile = "/json/config.json"
 )
 
 type configStruct struct {
-	DiscordToken  string
-	CommandPrefix string
-	JoinRole      string
-	MuteRole      string
+	DiscordToken   string
+	CommandPrefix  string
+	JoinRole       string
+	MuteRole       string
+	WelcomeMessage string
 }
 
 // LoadConfig read and load the config.json file
@@ -60,6 +64,7 @@ func LoadConfig() error {
 	CommandPrefix = load.CommandPrefix
 	JoinRole = load.JoinRole
 	MuteRole = load.MuteRole
+	WelcomeMessage = load.WelcomeMessage
 
 	return nil
 }
@@ -68,10 +73,11 @@ func LoadConfig() error {
 func SaveConfig() error {
 
 	save := configStruct{
-		DiscordToken:  DiscordToken,
-		CommandPrefix: CommandPrefix,
-		JoinRole:      JoinRole,
-		MuteRole:      MuteRole,
+		DiscordToken:   DiscordToken,
+		CommandPrefix:  CommandPrefix,
+		JoinRole:       JoinRole,
+		MuteRole:       MuteRole,
+		WelcomeMessage: WelcomeMessage,
 	}
 
 	configJSON, err := json.MarshalIndent(save, "", " ")
@@ -110,6 +116,19 @@ func SaveMuteRole(id string) error {
 	err := SaveConfig()
 
 	// Return if there was an error saving the mute role
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SaveWelcomeMessage to json file
+func SaveWelcomeMessage(message string) error {
+	WelcomeMessage = message
+	err := SaveConfig()
+
+	// Return if there was an error saving the welcome message
 	if err != nil {
 		return err
 	}

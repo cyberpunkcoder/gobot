@@ -27,14 +27,14 @@ func (h *help) execute(message *discordgo.MessageCreate, session *discordgo.Sess
 		output += ">>> "
 		output += generateHelpFor(author, channel, session)
 		session.ChannelMessageSend(channel, output)
-
-	} else {
-		for _, member := range mentionedMembers {
-			output := "**Commands Avaliable to <@" + member.ID + ">**\n"
-			output += ">>> "
-			output += generateHelpFor(member.ID, channel, session)
-			session.ChannelMessageSend(channel, output)
-		}
+		return
+	}
+	// Send help to each mentioned member
+	for _, member := range mentionedMembers {
+		output := "**Commands Avaliable to <@" + member.ID + ">**\n"
+		output += ">>> "
+		output += generateHelpFor(member.ID, channel, session)
+		session.ChannelMessageSend(channel, output)
 	}
 }
 
