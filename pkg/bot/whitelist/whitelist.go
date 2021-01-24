@@ -6,29 +6,27 @@ import (
 	"io/ioutil"
 	"log"
 	"strings"
-
-	"github.com/bwmarrin/discordgo"
 )
 
 var (
 	// BinPath is the location of the executable binary
 	BinPath string
 
-	// Whitelists that members will be muted for messaging
+	// Whitelists that the bot will ignore
 	Whitelists []whitelist
 
 	whitelistsFile = "/json/whitelists.json"
 )
 
-// Filter phrase or word members will be muted for messaging
+// whitelist the bot will ignore
 type whitelist struct {
 	Text string `json:"text"`
 }
 
-// ContainsWiteList returns true if a message contains a whitelist
-func ContainsWiteList(message *discordgo.MessageCreate, session *discordgo.Session) bool {
+// Check returns false if a message contains a whitelist, true if it does not
+func Check(s string) bool {
 	for _, whitelist := range Whitelists {
-		if strings.Contains(message.Content, whitelist.Text) && !message.Author.Bot {
+		if strings.Contains(s, whitelist.Text) {
 			return true
 		}
 	}

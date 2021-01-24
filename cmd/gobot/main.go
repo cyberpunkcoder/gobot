@@ -29,6 +29,7 @@ import (
 	"github.com/cyberpunkprogrammer/gobot/pkg/bot/config"
 	"github.com/cyberpunkprogrammer/gobot/pkg/bot/filter"
 	"github.com/cyberpunkprogrammer/gobot/pkg/bot/reactionrole"
+	"github.com/cyberpunkprogrammer/gobot/pkg/bot/whitelist"
 )
 
 // BinPath is the location of the executable binary
@@ -49,6 +50,7 @@ func main() {
 	config.BinPath = BinPath
 	reactionrole.BinPath = BinPath
 	filter.BinPath = BinPath
+	whitelist.BinPath = BinPath
 
 	// Load configuration for bot and api
 	err = config.LoadConfig()
@@ -86,6 +88,14 @@ func main() {
 	// Return if error loading filters.json
 	if err != nil {
 		log.Println("Error loading filters,", err)
+	}
+
+	// Load whitelists bot will ignore
+	err = whitelist.LoadWhitelists()
+
+	// Return if error loading whitelists.json
+	if err != nil {
+		log.Println("Error loading whitelists,", err)
 	}
 
 	bot.Start()

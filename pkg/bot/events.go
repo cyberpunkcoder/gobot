@@ -9,6 +9,7 @@ import (
 	"github.com/cyberpunkprogrammer/gobot/pkg/bot/config"
 	"github.com/cyberpunkprogrammer/gobot/pkg/bot/filter"
 	"github.com/cyberpunkprogrammer/gobot/pkg/bot/reactionrole"
+	"github.com/cyberpunkprogrammer/gobot/pkg/bot/whitelist"
 )
 
 // ready is called whenever the bot has successfully logged in
@@ -38,7 +39,10 @@ func messageCreate(session *discordgo.Session, message *discordgo.MessageCreate)
 	if message.Author.ID != session.State.User.ID {
 		// Check if message is a bot command
 		if strings.HasPrefix(message.Content, config.CommandPrefix) {
-			command.Execute(message, session)
+			// Check if message contains a whitelist
+			if whitelist.Check(message.Content) {
+				command.Execute(message, session)
+			}
 		}
 		// Check if message violates filter
 		filter.Check(message, session)
