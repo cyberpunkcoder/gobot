@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/cyberpunkprogrammer/gobot/pkg/bot/config"
 	"github.com/cyberpunkprogrammer/gobot/pkg/bot/whitelist"
 )
 
@@ -15,8 +16,8 @@ func init() {
 	addWhitelist := addWhitelist{command{
 		name:        "addwhitelist",
 		parameters:  "word or phrase",
-		description: "Adds word or phrase to whitelist for bot to ignore.",
-		permissions: []int{discordgo.PermissionVoiceMuteMembers},
+		description: "Adds word or phrase whitelist for bot to ignore.",
+		permissions: []int{discordgo.PermissionManageServer},
 	}}
 	executables = append(executables, &addWhitelist)
 }
@@ -30,6 +31,17 @@ func (a *addWhitelist) execute(message *discordgo.MessageCreate, session *discor
 	text = strings.ToLower(text)
 
 	if strings.Contains(message.Content, " ") && text != "" {
+		// Get keyword fom message text by removing CommandPrefix and everything after first space
+		keyword := strings.Replace(message.Content, config.CommandPrefix, "", -1)
+
+		for _, e := range executables {
+			if strings.Contains(e.getName(), keyword) {
+				session.ChannelMessageSend(channel, "<@"+author+"> whitelist not added.")
+				session.ChannelMessageSend(channel, "<@"+author+"> conflicts with existing command *"+config.CommandPrefix+keyword+"*.")
+				return
+			}
+		}
+
 		err := whitelist.SaveWhitelist(text)
 
 		if err != nil {
