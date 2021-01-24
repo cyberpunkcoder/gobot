@@ -25,12 +25,15 @@ type whitelist struct {
 
 // Check returns false if a message contains a whitelist, true if it does not
 func Check(s string) bool {
+	// Get keyword from string by removing everything after first space
+	keyword := strings.Split(s, " ")[0]
 	for _, whitelist := range Whitelists {
-		if strings.Contains(s, whitelist.Text) {
-			return true
+		if whitelist.Text == keyword {
+			// Violates whitelist
+			return false
 		}
 	}
-	return false
+	return true
 }
 
 // LoadWhitelists and whitelists alert from json file

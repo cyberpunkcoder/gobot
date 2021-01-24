@@ -1,6 +1,7 @@
 package command
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -31,13 +32,15 @@ func (a *addWhitelist) execute(message *discordgo.MessageCreate, session *discor
 	text = strings.ToLower(text)
 
 	if strings.Contains(message.Content, " ") && text != "" {
-		// Get keyword fom message text by removing CommandPrefix and everything after first space
-		keyword := strings.Replace(message.Content, config.CommandPrefix, "", -1)
+		// Get keyword fom message text by removing everything after first space
+		keyword := strings.Split(text, " ")[0]
 
 		for _, e := range executables {
-			if strings.Contains(e.getName(), keyword) {
+			fmt.Println(e.getName())
+			fmt.Println(keyword)
+			if config.CommandPrefix+e.getName() == keyword {
 				session.ChannelMessageSend(channel, "<@"+author+"> whitelist not added.")
-				session.ChannelMessageSend(channel, "<@"+author+"> conflicts with existing command *"+config.CommandPrefix+keyword+"*.")
+				session.ChannelMessageSend(channel, "<@"+author+"> conflicts with existing command *"+config.CommandPrefix+e.getName()+"*.")
 				return
 			}
 		}
