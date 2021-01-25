@@ -21,6 +21,11 @@ func init() {
 func (a *filters) execute(message *discordgo.MessageCreate, session *discordgo.Session) {
 	channel := message.ChannelID
 
+	if len(filter.Filters) == 0 {
+		session.ChannelMessageSend(channel, "<@"+message.Author.ID+"> no filters have been set.")
+		return
+	}
+
 	output := "**Mute Filters**\n"
 	output += ">>> "
 

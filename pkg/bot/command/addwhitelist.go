@@ -1,7 +1,6 @@
 package command
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -36,8 +35,7 @@ func (a *addWhitelist) execute(message *discordgo.MessageCreate, session *discor
 		keyword := strings.Split(text, " ")[0]
 
 		for _, e := range executables {
-			fmt.Println(e.getName())
-			fmt.Println(keyword)
+			// Check if there is a conflicting command
 			if config.CommandPrefix+e.getName() == keyword {
 				session.ChannelMessageSend(channel, "<@"+author+"> whitelist not added.")
 				session.ChannelMessageSend(channel, "<@"+author+"> conflicts with existing command *"+config.CommandPrefix+e.getName()+"*.")

@@ -34,6 +34,11 @@ That's it! Assuming everything went well, your bot should be online and ready to
 - ```!addrole @role :emoji: Catagory``` Creates a reaction role with an emoji and catagory.
 - ```!removerole @role``` Removes a role from the reaction role menu.
 
+### Whitelists
+- ```!whitelists``` Lists all whitelisted commands for the bot to ignore.
+- ```!addwhitelist word or phrase``` Adds a whitelisted word or phrase for bot to ignore
+- ```!removewhitelist word or phrase``` Removes a whitelisted word or phrase for bot to ignore.
+
 ### Word or Phrase Filters
 - ```!addfilter word or phrase``` Creates a message filter that if volated a message will be removed and member muted if mute role set.
 - ```!removefilter word or phrase``` Removes a message filter.

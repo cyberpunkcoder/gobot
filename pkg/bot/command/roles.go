@@ -27,6 +27,11 @@ func (r *roles) execute(message *discordgo.MessageCreate, session *discordgo.Ses
 	session.ChannelMessageDelete(channel, message.ID)
 	checkingMessage, _ := session.ChannelMessageSend(message.ChannelID, "<@"+message.Author.ID+"> checking access to each emoji.")
 
+	if len(reactionrole.Catagories) == 0 {
+		session.ChannelMessageSend(channel, "<@"+message.Author.ID+"> no reaction roles have been set.")
+		return
+	}
+
 	// Check if bot has access to all emojis
 	for _, catagory := range reactionrole.Catagories {
 		for _, role := range catagory.Role {
