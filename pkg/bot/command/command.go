@@ -121,15 +121,13 @@ func logCommandExecution(e executable, message *discordgo.MessageCreate, session
 		log.Printf("Error retrieving channel: %v", err)
 		return
 	}
-
 	var mentionNames []string
 	for _, mention := range message.Mentions {
-		mentionNames = append(mentionNames, mention.Username)
+		mentionNames = append(mentionNames, displayName(mention))
 	}
-
 	log.Printf("Executing command: %s, author: %s, channel: %s, mentions: %v",
 		e.getName(),
-		message.Author.GlobalName,
+		displayName(message.Author),
 		channel.Name,
 		mentionNames,
 	)
@@ -153,4 +151,12 @@ func (c *command) getPermisssions() []int {
 
 func (c *command) wrongFormat() string {
 	return "incorrectly formatted command, try **" + c.getUsage() + "**."
+}
+
+func displayName(user *discordgo.User) string {
+	displayName := user.Username
+	if user.GlobalName != "" {
+		displayName = user.GlobalName
+	}
+	return displayName
 }

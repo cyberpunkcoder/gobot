@@ -20,7 +20,14 @@ func ready(session *discordgo.Session, ready *discordgo.Ready) {
 
 // guildMemberAdd is called when a member joins the guild
 func guildMemberAdd(session *discordgo.Session, user *discordgo.GuildMemberAdd) {
-	log.Printf("User %s joined guild %s", user.User.ID, user.GuildID)
+	// Retrieve guild information
+	guild, err := session.Guild(user.GuildID)
+	if err != nil {
+		log.Printf("Error retrieving guild: %v", err)
+		return
+	}
+	// Log the guild member addition with user and guild names
+	log.Printf("User %s joined guild %s", displayName(user.User), guild.Name)
 
 	if config.JoinRole != "" {
 		// Give a member the join role
@@ -66,7 +73,20 @@ func messageCreate(session *discordgo.Session, message *discordgo.MessageCreate)
 
 // messageReactionAdd is called whenever a reaction has been added to a message
 func messageReactionAdd(session *discordgo.Session, reaction *discordgo.MessageReactionAdd) {
-	log.Printf("Reaction from %s in %s: %s", reaction.UserID, reaction.ChannelID, reaction.Emoji.ID)
+	// Retrieve user information
+	user, err := session.User(reaction.UserID)
+	if err != nil {
+		log.Printf("Error retrieving user: %v", err)
+		return
+	}
+	// Retrieve channel information
+	channel, err := session.State.Channel(reaction.ChannelID)
+	if err != nil {
+		log.Printf("Error retrieving channel: %v", err)
+		return
+	}
+	// Log the reaction addition with user and channel names
+	log.Printf("Reaction from %s in %s: %s", displayName(user), channel.Name, reaction.Emoji.Name)
 
 	botPermissions, err := session.State.UserChannelPermissions(session.State.User.ID, reaction.ChannelID)
 	if err != nil {
@@ -94,14 +114,26 @@ func messageReactionAdd(session *discordgo.Session, reaction *discordgo.MessageR
 
 // messageReactionAdd is called whenever a reaction has been removed from a message
 func messageReactionRemove(session *discordgo.Session, reaction *discordgo.MessageReactionRemove) {
-	log.Printf("Reaction from %s in %s: %s", reaction.UserID, reaction.ChannelID, reaction.Emoji.ID)
+	// Retrieve user information
+	user, err := session.User(reaction.UserID)
+	if err != nil {
+		log.Printf("Error retrieving user: %v", err)
+		return
+	}
+	// Retrieve channel information
+	channel, err := session.State.Channel(reaction.ChannelID)
+	if err != nil {
+		log.Printf("Error retrieving channel: %v", err)
+		return
+	}
+	// Log the reaction removal with user and channel names
+	log.Printf("Reaction from %s in %s: %s", displayName(user), channel.Name, reaction.Emoji.Name)
 
 	botPermissions, err := session.State.UserChannelPermissions(session.State.User.ID, reaction.ChannelID)
 	if err != nil {
 		log.Printf("Error getting bot permissions: %v", err)
 		return
 	}
-
 	// Return if bot does not have permission to manage roles
 	if botPermissions&discordgo.PermissionManageRoles == 0 {
 		session.ChannelMessage(reaction.ChannelID, "<@"+reaction.UserID+"> I don't have permission to manage roles.")
@@ -120,4 +152,12 @@ func messageReactionRemove(session *discordgo.Session, reaction *discordgo.Messa
 			}
 		}
 	}
+}
+
+func displayName(user *discordgo.User) string {
+	displayName := user.Username
+	if user.GlobalName != "" {
+		displayName = user.GlobalName
+	}
+	return displayName
 }
