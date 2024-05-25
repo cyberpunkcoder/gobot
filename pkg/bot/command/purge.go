@@ -1,6 +1,7 @@
 package command
 
 import (
+	"log"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -11,33 +12,34 @@ type purge struct {
 }
 
 func init() {
-
 	purge := purge{command{
 		name:        "purge",
 		parameters:  "(optional: @member)",
 		description: "Deletes last 100 messages from all or mentioned member.",
 		permissions: []int{discordgo.PermissionManageMessages},
 	}}
-
 	executables = append(executables, &purge)
 }
 
-func (p *purge) execute(commandMessage *discordgo.MessageCreate, session *discordgo.Session) {
+func (p *purge) execute(commandMessage *discordgo.MessageCreate, session *discordgo.Session) error {
 	author := commandMessage.Author.ID
 	mentionedMembers := commandMessage.Mentions
 	channel := commandMessage.ChannelID
 
 	// Last 100 messages in command channel
 	messages, err := session.ChannelMessages(channel, 100, commandMessage.ID, "", "")
-
-	// Return if unable to check messages
 	if err != nil {
+		log.Printf("Error getting messages: %v", err)
 		session.ChannelMessageSend(channel, "<@"+author+"> unable to check messages.")
-		return
+		return err
 	}
 
 	session.ChannelMessageDelete(channel, commandMessage.ID)
-	purgeMessage, _ := session.ChannelMessageSend(channel, "<@"+author+"> purging.")
+	purgeMessage, err := session.ChannelMessageSend(channel, "<@"+author+"> purging.")
+	if err != nil {
+		log.Printf("Error sending message: %v", err)
+		return err
+	}
 
 	// If no user was mentioned in the command delete each of last 100 messages
 	if len(mentionedMembers) == 0 {
@@ -62,4 +64,5 @@ func (p *purge) execute(commandMessage *discordgo.MessageCreate, session *discor
 
 	// Delete purging status message
 	session.ChannelMessageDelete(channel, purgeMessage.ID)
+	return nil
 }

@@ -18,15 +18,16 @@ func init() {
 	executables = append(executables, &removeWelcomeMessage)
 }
 
-func (a *removeWelcomeMessage) execute(message *discordgo.MessageCreate, session *discordgo.Session) {
+func (a *removeWelcomeMessage) execute(message *discordgo.MessageCreate, session *discordgo.Session) error {
 	author := message.Author.ID
 	channel := message.ChannelID
 
 	if config.WelcomeMessage == "" {
 		session.ChannelMessageSend(channel, "<@"+author+"> welcome message not set.")
-		return
+		return nil
 	}
 
 	config.SaveWelcomeMessage("")
 	session.ChannelMessageSend(channel, "<@"+author+"> welcome message removed.")
+	return nil
 }

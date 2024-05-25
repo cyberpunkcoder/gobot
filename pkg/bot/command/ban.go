@@ -20,7 +20,7 @@ func init() {
 	executables = append(executables, &ban)
 }
 
-func (b *ban) execute(message *discordgo.MessageCreate, session *discordgo.Session) {
+func (b *ban) execute(message *discordgo.MessageCreate, session *discordgo.Session) error {
 
 	author := message.Author.ID
 	mentionedMembers := message.Mentions
@@ -29,7 +29,7 @@ func (b *ban) execute(message *discordgo.MessageCreate, session *discordgo.Sessi
 	// Return if no users mentioned in command
 	if len(mentionedMembers) <= 0 {
 		session.ChannelMessageSend(channel, "<@"+author+"> "+b.wrongFormat())
-		return
+		return nil
 	}
 
 	// Ban all mentioned users
@@ -41,4 +41,5 @@ func (b *ban) execute(message *discordgo.MessageCreate, session *discordgo.Sessi
 			session.GuildBanCreate(message.GuildID, member.ID, 0)
 		}
 	}
+	return nil
 }

@@ -18,12 +18,12 @@ func init() {
 	executables = append(executables, &filters)
 }
 
-func (a *filters) execute(message *discordgo.MessageCreate, session *discordgo.Session) {
+func (a *filters) execute(message *discordgo.MessageCreate, session *discordgo.Session) error {
 	channel := message.ChannelID
 
 	if len(filter.Filters) == 0 {
 		session.ChannelMessageSend(channel, "<@"+message.Author.ID+"> no filters have been set.")
-		return
+		return nil
 	}
 
 	output := "**Mute Filters**\n"
@@ -34,4 +34,5 @@ func (a *filters) execute(message *discordgo.MessageCreate, session *discordgo.S
 	}
 
 	session.ChannelMessageSend(channel, output)
+	return nil
 }

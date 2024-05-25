@@ -17,7 +17,7 @@ func init() {
 	executables = append(executables, &help)
 }
 
-func (h *help) execute(message *discordgo.MessageCreate, session *discordgo.Session) {
+func (h *help) execute(message *discordgo.MessageCreate, session *discordgo.Session) error {
 	author := message.Author.ID
 	channel := message.ChannelID
 	mentionedMembers := message.Mentions
@@ -27,7 +27,7 @@ func (h *help) execute(message *discordgo.MessageCreate, session *discordgo.Sess
 		output += ">>> "
 		output += generateHelpFor(author, channel, session)
 		session.ChannelMessageSend(channel, output)
-		return
+		return nil
 	}
 	// Send help to each mentioned member
 	for _, member := range mentionedMembers {
@@ -36,6 +36,7 @@ func (h *help) execute(message *discordgo.MessageCreate, session *discordgo.Sess
 		output += generateHelpFor(member.ID, channel, session)
 		session.ChannelMessageSend(channel, output)
 	}
+	return nil
 }
 
 func generateHelpFor(memberID string, channelID string, session *discordgo.Session) string {

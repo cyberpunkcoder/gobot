@@ -20,7 +20,7 @@ func init() {
 	executables = append(executables, &kick)
 }
 
-func (k *kick) execute(message *discordgo.MessageCreate, session *discordgo.Session) {
+func (k *kick) execute(message *discordgo.MessageCreate, session *discordgo.Session) error {
 	author := message.Author.ID
 	mentionedMembers := message.Mentions
 	channel := message.ChannelID
@@ -28,7 +28,7 @@ func (k *kick) execute(message *discordgo.MessageCreate, session *discordgo.Sess
 	// Return if no users mentioned in command
 	if len(mentionedMembers) <= 0 {
 		session.ChannelMessageSend(channel, "<@"+author+"> "+k.wrongFormat())
-		return
+		return nil
 	}
 
 	// Kick all mentioned users
@@ -40,4 +40,5 @@ func (k *kick) execute(message *discordgo.MessageCreate, session *discordgo.Sess
 			session.GuildMemberDelete(message.GuildID, member.ID)
 		}
 	}
+	return nil
 }

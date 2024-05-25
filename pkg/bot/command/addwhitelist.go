@@ -22,7 +22,7 @@ func init() {
 	executables = append(executables, &addWhitelist)
 }
 
-func (a *addWhitelist) execute(message *discordgo.MessageCreate, session *discordgo.Session) {
+func (a *addWhitelist) execute(message *discordgo.MessageCreate, session *discordgo.Session) error {
 	author := message.Author.ID
 	channel := message.ChannelID
 
@@ -39,20 +39,20 @@ func (a *addWhitelist) execute(message *discordgo.MessageCreate, session *discor
 			if config.CommandPrefix+e.getName() == keyword {
 				session.ChannelMessageSend(channel, "<@"+author+"> whitelist not added.")
 				session.ChannelMessageSend(channel, "<@"+author+"> conflicts with existing command *"+config.CommandPrefix+e.getName()+"*.")
-				return
+				return nil
 			}
 		}
 
 		err := whitelist.SaveWhitelist(text)
-
 		if err != nil {
 			// Return if whitelist already exists
 			session.ChannelMessageSend(channel, "<@"+author+"> whitelist already exists.")
-			return
+			return err
 		}
 
 		session.ChannelMessageSend(channel, "<@"+author+"> whitelist added.")
-		return
+		return nil
 	}
 	session.ChannelMessageSend(channel, "<@"+author+"> "+a.wrongFormat())
+	return nil
 }

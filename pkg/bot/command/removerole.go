@@ -21,7 +21,7 @@ func init() {
 	executables = append(executables, &removeRole)
 }
 
-func (r *removeRole) execute(message *discordgo.MessageCreate, session *discordgo.Session) {
+func (r *removeRole) execute(message *discordgo.MessageCreate, session *discordgo.Session) error {
 
 	author := message.Author.ID
 	channel := message.ChannelID
@@ -31,16 +31,15 @@ func (r *removeRole) execute(message *discordgo.MessageCreate, session *discordg
 
 	if len(role) < 2 {
 		session.ChannelMessageSend(channel, "<@"+author+"> "+r.wrongFormat())
-		return
+		return nil
 	}
 
 	err := reactionrole.RemoveRole(role[1])
-
-	// Return if unable to remove role
 	if err != nil {
 		session.ChannelMessageSend(channel, "<@"+author+"> role not found.")
-		return
+		return err
 	}
 
 	session.ChannelMessageSend(channel, "<@"+author+"> role removed.")
+	return nil
 }

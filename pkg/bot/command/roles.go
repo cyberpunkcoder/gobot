@@ -1,7 +1,6 @@
 package command
 
 import (
-	"log"
 	"strconv"
 	"strings"
 
@@ -22,33 +21,30 @@ func init() {
 	executables = append(executables, &roles)
 }
 
-func (r *roles) execute(message *discordgo.MessageCreate, session *discordgo.Session) {
+func (r *roles) execute(message *discordgo.MessageCreate, session *discordgo.Session) error {
 	channel := message.ChannelID
 	session.ChannelMessageDelete(channel, message.ID)
 	checkingMessage, _ := session.ChannelMessageSend(message.ChannelID, "<@"+message.Author.ID+"> checking access to each emoji.")
 
 	if len(reactionrole.Catagories) == 0 {
 		session.ChannelMessageSend(channel, "<@"+message.Author.ID+"> no reaction roles have been set.")
-		return
+		return nil
 	}
 
 	// Check if bot has access to all emojis
 	for _, catagory := range reactionrole.Catagories {
 		for _, role := range catagory.Role {
-			if role.Emoji.ID != "" {
-				err := session.MessageReactionAdd(checkingMessage.ChannelID, checkingMessage.ID, role.Emoji.APIName())
-
-				// Return if unable to create reaction
-				if err != nil {
-					if strings.Contains(err.Error(), strconv.Itoa(discordgo.ErrCodeUnknownEmoji)) {
-						session.ChannelMessageDelete(channel, message.ID)
-						session.ChannelMessageDelete(channel, checkingMessage.ID)
-						session.ChannelMessageSend(message.ChannelID, "<@"+message.Author.ID+"> I don't have access to the emoji "+role.Emoji.ToString()+" .")
-						return
-					}
-					log.Println(err)
-					return
+			if role.Emoji.ID == "" {
+				continue
+			}
+			err := session.MessageReactionAdd(checkingMessage.ChannelID, checkingMessage.ID, role.Emoji.APIName())
+			if err != nil {
+				if strings.Contains(err.Error(), strconv.Itoa(discordgo.ErrCodeUnknownEmoji)) {
+					session.ChannelMessageDelete(channel, message.ID)
+					session.ChannelMessageDelete(channel, checkingMessage.ID)
+					session.ChannelMessageSend(message.ChannelID, "<@"+message.Author.ID+"> I don't have access to the emoji "+role.Emoji.ToString()+" .")
 				}
+				return err
 			}
 		}
 	}
@@ -71,11 +67,8 @@ func (r *roles) execute(message *discordgo.MessageCreate, session *discordgo.Ses
 		}
 
 		msg, err := session.ChannelMessageSend(message.ChannelID, output)
-
-		// Return if unable to create message
 		if err != nil {
-			log.Println(err)
-			return
+			return err
 		}
 
 		// Save ID of the reaction role to check for reactions later
@@ -83,12 +76,10 @@ func (r *roles) execute(message *discordgo.MessageCreate, session *discordgo.Ses
 
 		for _, role := range catagory.Role {
 			err = session.MessageReactionAdd(channel, msg.ID, role.Emoji.APIName())
-
-			// Return if unable to create reaction
 			if err != nil {
-				log.Println(err)
-				return
+				return err
 			}
 		}
 	}
+	return nil
 }

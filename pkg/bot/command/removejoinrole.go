@@ -18,15 +18,16 @@ func init() {
 	executables = append(executables, &removeJoinRole)
 }
 
-func (a *removeJoinRole) execute(message *discordgo.MessageCreate, session *discordgo.Session) {
+func (a *removeJoinRole) execute(message *discordgo.MessageCreate, session *discordgo.Session) error {
 	author := message.Author.ID
 	channel := message.ChannelID
 
 	if config.JoinRole == "" {
 		session.ChannelMessageSend(channel, "<@"+author+"> join role not set.")
-		return
+		return nil
 	}
 
 	config.SaveJoinRole("")
 	session.ChannelMessageSend(channel, "<@"+author+"> join role removed.")
+	return nil
 }

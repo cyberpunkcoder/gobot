@@ -49,9 +49,8 @@ func LoadRoles() error {
 	log.Println("Loading reaction roles")
 
 	file, err := ioutil.ReadFile(BinPath + reactionRoleFile)
-
-	// Create new reactionroles.json file if none exists, returns for other errors
 	if err != nil {
+		// Create new reactionroles.json file if none exists, returns for other errors
 		if strings.Contains(err.Error(), "no") && strings.Contains(err.Error(), "directory") {
 			saveRoles()
 			return nil
@@ -60,8 +59,6 @@ func LoadRoles() error {
 	}
 
 	err = json.Unmarshal(file, &Catagories)
-
-	// Return if there was an error unmarshaling reactionrroles.json
 	if err != nil {
 		return err
 	}
@@ -124,13 +121,11 @@ func RemoveRole(roleID string) error {
 
 // LoadMessages loads messages ids that users react too to obtain roles
 func LoadMessages() error {
-
 	log.Println("Loading reaction role messages")
 
 	file, err := ioutil.ReadFile(BinPath + reactionRoleMessagesFile)
-
-	// Create new reactionrolemessages.json file if none exists, returns for other errors
 	if err != nil {
+		// Create new reactionrolemessages.json file if none exists, returns for other errors
 		if strings.Contains(err.Error(), "no") && strings.Contains(err.Error(), "directory") {
 			saveMessages()
 			return nil
@@ -139,8 +134,6 @@ func LoadMessages() error {
 	}
 
 	err = json.Unmarshal(file, &Messages)
-
-	// Return if there was an error unmarshaling reactionrrolemessages.json
 	if err != nil {
 		log.Println(err.Error())
 		return err
@@ -157,18 +150,13 @@ func SaveMessage(messageid string) {
 
 func saveMessages() error {
 	roleMessagesJSON, err := json.MarshalIndent(Messages, "", " ")
-
-	// Return if there was an error marshaling Messages
 	if err != nil {
-		log.Println(err.Error())
+		log.Printf("Error marshaling reactionrolemessages.json: %v", err)
 		return err
 	}
-
 	err = ioutil.WriteFile(BinPath+reactionRoleMessagesFile, roleMessagesJSON, 0644)
-
-	// Return if there was an error writing to reactionrolemessages.json
 	if err != nil {
-		log.Println(err.Error())
+		log.Printf("Error writing to reactionrolemessages.json: %v", err)
 		return err
 	}
 
@@ -178,18 +166,13 @@ func saveMessages() error {
 // saveRoles saves the current state of the roles to reactionroles.json
 func saveRoles() error {
 	roleMessagesJSON, err := json.MarshalIndent(Catagories, "", " ")
-
-	// Return if there was an error marshaling reactionrolemessages.json
 	if err != nil {
-		log.Println(err.Error())
+		log.Printf("Error marshaling reactionroles.json: %v", err)
 		return err
 	}
-
 	err = ioutil.WriteFile(BinPath+reactionRoleFile, roleMessagesJSON, 0644)
-
-	// Return if there was an error writing to reactionrolemessages.json
 	if err != nil {
-		log.Println(err.Error())
+		log.Printf("Error writing to reactionroles.json: %v", err)
 		return err
 	}
 
@@ -201,7 +184,6 @@ func (emoji Emoji) APIName() string {
 	if emoji.ID != "" {
 		return emoji.Name + ":" + emoji.ID
 	}
-
 	return emoji.Name
 }
 
@@ -210,6 +192,5 @@ func (emoji Emoji) ToString() string {
 	if emoji.ID != "" {
 		return "<" + emoji.Prefix + ":" + emoji.Name + ":" + emoji.ID + ">"
 	}
-
 	return emoji.Name
 }

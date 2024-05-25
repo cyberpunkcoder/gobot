@@ -18,15 +18,16 @@ func init() {
 	executables = append(executables, &removeMuteRole)
 }
 
-func (a *removeMuteRole) execute(message *discordgo.MessageCreate, session *discordgo.Session) {
+func (a *removeMuteRole) execute(message *discordgo.MessageCreate, session *discordgo.Session) error {
 	author := message.Author.ID
 	channel := message.ChannelID
 
 	if config.MuteRole == "" {
 		session.ChannelMessageSend(channel, "<@"+author+"> mute role not set.")
-		return
+		return nil 
 	}
 
 	config.SaveMuteRole("")
 	session.ChannelMessageSend(channel, "<@"+author+"> mute role removed.")
+	return nil
 }

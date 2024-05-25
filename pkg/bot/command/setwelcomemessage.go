@@ -21,28 +21,26 @@ func init() {
 	executables = append(executables, &setWelcomeMessage)
 }
 
-func (a *setWelcomeMessage) execute(message *discordgo.MessageCreate, session *discordgo.Session) {
+func (a *setWelcomeMessage) execute(message *discordgo.MessageCreate, session *discordgo.Session) error {
 	author := message.Author.ID
 	channel := message.ChannelID
 
 	if config.WelcomeMessage != "" {
 		session.ChannelMessageSend(channel, "<@"+author+"> welcome message already set.")
-		return
+		return nil
 	}
 	text := strings.Split(message.Content, " ")[0] + " "
 	text = strings.TrimPrefix(message.Content, text)
 
 	if strings.Contains(message.Content, " ") && text != "" {
 		err := config.SaveWelcomeMessage(text)
-
 		if err != nil {
-			// Return if could not save welcome message
 			session.ChannelMessageSend(channel, "<@"+author+"> could not set welcome message.")
-			return
+			return err
 		}
-
 		session.ChannelMessageSend(channel, "<@"+author+"> welcome message set.")
-		return
+		return nil
 	}
 	session.ChannelMessageSend(channel, "<@"+author+"> "+a.wrongFormat())
+	return nil
 }

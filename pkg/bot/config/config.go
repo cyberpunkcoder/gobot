@@ -46,8 +46,6 @@ func LoadConfig() error {
 	log.Println("Loading configuration")
 
 	file, err := ioutil.ReadFile(BinPath + configFile)
-
-	// Return if there was a problem reading the file
 	if err != nil {
 		return err
 	}
@@ -55,7 +53,6 @@ func LoadConfig() error {
 	load := configStruct{}
 
 	err = json.Unmarshal(file, &load)
-
 	if err != nil {
 		return err
 	}
@@ -71,7 +68,6 @@ func LoadConfig() error {
 
 // SaveConfig saves the configuration to drive from memory
 func SaveConfig() error {
-
 	save := configStruct{
 		DiscordToken:   DiscordToken,
 		CommandPrefix:  CommandPrefix,
@@ -81,15 +77,10 @@ func SaveConfig() error {
 	}
 
 	configJSON, err := json.MarshalIndent(save, "", " ")
-
-	// Return if there was a problem marshaling config
 	if err != nil {
 		return err
 	}
-
 	err = ioutil.WriteFile(BinPath+configFile, configJSON, 0644)
-
-	// Return if there was an error writing to the json file
 	if err != nil {
 		return err
 	}
@@ -101,12 +92,9 @@ func SaveConfig() error {
 func SaveJoinRole(id string) error {
 	JoinRole = id
 	err := SaveConfig()
-
-	// Return if there was an error saving the join role
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -114,12 +102,9 @@ func SaveJoinRole(id string) error {
 func SaveMuteRole(id string) error {
 	MuteRole = id
 	err := SaveConfig()
-
-	// Return if there was an error saving the mute role
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -127,12 +112,9 @@ func SaveMuteRole(id string) error {
 func SaveWelcomeMessage(message string) error {
 	WelcomeMessage = message
 	err := SaveConfig()
-
-	// Return if there was an error saving the welcome message
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -142,14 +124,12 @@ func Create() {
 	for {
 		reader := bufio.NewReader(os.Stdin)
 		response, err := reader.ReadString('\n')
-
 		if err != nil {
 			log.Println(err.Error())
 			return
 		}
 
 		if response == "y\n" {
-
 			// Obtain bot token from user and store into variable
 			fmt.Print("Enter discord bot token: ")
 			discordToken, err := reader.ReadString('\n')
@@ -159,7 +139,6 @@ func Create() {
 				log.Println(err)
 				return
 			}
-
 			// Obtain command prefix from user and store into variable
 			fmt.Print("Enter command prefix (For example '!'): ")
 			commandPrefix, err := reader.ReadString('\n')

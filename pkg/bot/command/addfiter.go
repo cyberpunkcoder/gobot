@@ -21,7 +21,7 @@ func init() {
 	executables = append(executables, &addFilter)
 }
 
-func (a *addFilter) execute(message *discordgo.MessageCreate, session *discordgo.Session) {
+func (a *addFilter) execute(message *discordgo.MessageCreate, session *discordgo.Session) error {
 	author := message.Author.ID
 	channel := message.ChannelID
 
@@ -32,13 +32,12 @@ func (a *addFilter) execute(message *discordgo.MessageCreate, session *discordgo
 	if strings.Contains(message.Content, " ") && text != "" {
 		err := filter.SaveFilter(text)
 		if err != nil {
-			// Return if filter already exists
 			session.ChannelMessageSend(channel, "<@"+author+"> filter already exists.")
-			return
+			return err
 		}
-
 		session.ChannelMessageSend(channel, "<@"+author+"> filter added.")
-		return
+		return nil
 	}
 	session.ChannelMessageSend(channel, "<@"+author+"> "+a.wrongFormat())
+	return nil
 }

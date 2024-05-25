@@ -1,6 +1,7 @@
 package command
 
 import (
+	"log"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -21,7 +22,7 @@ func init() {
 	executables = append(executables, &removeFilter)
 }
 
-func (a *removeFilter) execute(message *discordgo.MessageCreate, session *discordgo.Session) {
+func (a *removeFilter) execute(message *discordgo.MessageCreate, session *discordgo.Session) error {
 	author := message.Author.ID
 	channel := message.ChannelID
 
@@ -30,12 +31,12 @@ func (a *removeFilter) execute(message *discordgo.MessageCreate, session *discor
 	text = strings.ToLower(text)
 
 	err := filter.RemoveFilter(text)
-
-	// Return if filter not found
 	if err != nil {
+		log.Printf("Error removing filter: %v", err)
 		session.ChannelMessageSend(channel, "<@"+author+"> filter not found.")
-		return
+		return err
 	}
 
 	session.ChannelMessageSend(channel, "<@"+author+"> filter removed.")
+	return nil
 }

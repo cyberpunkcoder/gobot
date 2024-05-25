@@ -18,12 +18,12 @@ func init() {
 	executables = append(executables, &whitelists)
 }
 
-func (a *whitelists) execute(message *discordgo.MessageCreate, session *discordgo.Session) {
+func (a *whitelists) execute(message *discordgo.MessageCreate, session *discordgo.Session) error {
 	channel := message.ChannelID
 
 	if len(whitelist.Whitelists) == 0 {
 		session.ChannelMessageSend(channel, "<@"+message.Author.ID+"> no whitelists have been set.")
-		return
+		return nil
 	}
 
 	output := "**Bot Whitelists**\n"
@@ -31,6 +31,6 @@ func (a *whitelists) execute(message *discordgo.MessageCreate, session *discordg
 	for _, whitelist := range whitelist.Whitelists {
 		output += "*" + whitelist.Text + "*\n"
 	}
-
 	session.ChannelMessageSend(channel, output)
+	return nil
 }

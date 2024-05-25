@@ -41,23 +41,14 @@ func LoadWhitelists() error {
 	log.Println("Loading Whitelists")
 
 	file, err := ioutil.ReadFile(BinPath + whitelistsFile)
-
-	// Create new json file if none exists, returns for other errors
 	if err != nil {
+		// Create new whitelists.json file if none exists, returns for other errors
 		if strings.Contains(err.Error(), "no") && strings.Contains(err.Error(), "directory") {
-			saveWhitelists()
-			return nil
+			return saveWhitelists()
 		}
 		return err
 	}
-
-	err = json.Unmarshal(file, &Whitelists)
-
-	// Return if there was an error unmarshaling json
-	if err != nil {
-		return err
-	}
-	return nil
+	return json.Unmarshal(file, &Whitelists)
 }
 
 // SaveWhitelist to json file
@@ -71,8 +62,7 @@ func SaveWhitelist(text string) error {
 
 	newFilter := whitelist{Text: text}
 	Whitelists = append(Whitelists, newFilter)
-	saveWhitelists()
-	return nil
+	return saveWhitelists()
 }
 
 // RemoveWhitelist from json file
@@ -82,9 +72,7 @@ func RemoveWhitelist(text string) error {
 			// Remove the whitelist from Whitelists
 			Whitelists[i] = Whitelists[len(Whitelists)-1]
 			Whitelists = Whitelists[:len(Whitelists)-1]
-
-			saveWhitelists()
-			return nil
+			return saveWhitelists()
 		}
 	}
 	// If the whitelist was not found return an error
@@ -93,20 +81,12 @@ func RemoveWhitelist(text string) error {
 
 func saveWhitelists() error {
 	WhitelistsJSON, err := json.MarshalIndent(Whitelists, "", " ")
-
-	// Return if there was an error marshaling Whitelists
 	if err != nil {
-		log.Println(err.Error())
 		return err
 	}
-
 	err = ioutil.WriteFile(BinPath+whitelistsFile, WhitelistsJSON, 0644)
-
-	// Return if there was an error writing to json file
 	if err != nil {
-		log.Println(err.Error())
 		return err
 	}
-
 	return nil
 }

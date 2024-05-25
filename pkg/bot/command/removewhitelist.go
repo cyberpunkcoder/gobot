@@ -21,7 +21,7 @@ func init() {
 	executables = append(executables, &removeWhitelist)
 }
 
-func (a *removeWhitelist) execute(message *discordgo.MessageCreate, session *discordgo.Session) {
+func (a *removeWhitelist) execute(message *discordgo.MessageCreate, session *discordgo.Session) error {
 	author := message.Author.ID
 	channel := message.ChannelID
 
@@ -30,12 +30,11 @@ func (a *removeWhitelist) execute(message *discordgo.MessageCreate, session *dis
 	text = strings.ToLower(text)
 
 	err := whitelist.RemoveWhitelist(text)
-
-	// Return if whitelist not found
 	if err != nil {
 		session.ChannelMessageSend(channel, "<@"+author+"> whitelist not found.")
-		return
+		return err
 	}
 
 	session.ChannelMessageSend(channel, "<@"+author+"> whitelist removed.")
+	return nil
 }

@@ -19,7 +19,7 @@ func init() {
 	executables = append(executables, &setJoinRole)
 }
 
-func (a *setJoinRole) execute(message *discordgo.MessageCreate, session *discordgo.Session) {
+func (a *setJoinRole) execute(message *discordgo.MessageCreate, session *discordgo.Session) error {
 	author := message.Author.ID
 	channel := message.ChannelID
 	mentionedRoles := message.MentionRoles
@@ -27,11 +27,12 @@ func (a *setJoinRole) execute(message *discordgo.MessageCreate, session *discord
 	if len(mentionedRoles) == 1 {
 		if config.JoinRole == mentionedRoles[0] {
 			session.ChannelMessageSend(channel, "<@"+author+"> join role already set to that.")
-			return
+			return nil
 		}
 		session.ChannelMessageSend(channel, "<@"+author+"> join role set.")
 		config.SaveJoinRole(mentionedRoles[0])
-		return
+		return nil
 	}
 	session.ChannelMessageSend(channel, "<@"+author+"> "+a.wrongFormat())
+	return nil
 }

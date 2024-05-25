@@ -16,6 +16,7 @@ func init() {
 	executables = append(executables, &hello)
 }
 
-func (h *hello) execute(message *discordgo.MessageCreate, session *discordgo.Session) {
+func (h *hello) execute(message *discordgo.MessageCreate, session *discordgo.Session) error {
 	session.ChannelMessageSend(message.ChannelID, "<@"+message.Author.ID+"> hello!")
+	return nil
 }

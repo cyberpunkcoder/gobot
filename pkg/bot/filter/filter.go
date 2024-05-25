@@ -30,7 +30,7 @@ type filter struct {
 	Text string `json:"text"`
 }
 
-//alert member that will be alerted if filtr is violated
+// alert member that will be alerted if filtr is violated
 type alert struct {
 	ID string `json:"ID"`
 }
@@ -119,8 +119,6 @@ func LoadFilters() error {
 	log.Println("Loading Filters")
 
 	file, err := ioutil.ReadFile(BinPath + filtersFile)
-
-	// Create new json file if none exists, returns for other errors
 	if err != nil {
 		if strings.Contains(err.Error(), "no") && strings.Contains(err.Error(), "directory") {
 			saveFilters()
@@ -130,15 +128,11 @@ func LoadFilters() error {
 	}
 
 	err = json.Unmarshal(file, &Filters)
-
-	// Return if there was an error unmarshaling json
 	if err != nil {
 		return err
 	}
 
 	file, err = ioutil.ReadFile(BinPath + alertsFile)
-
-	// Create new json file if none exists, returns for other errors
 	if err != nil {
 		if strings.Contains(err.Error(), "no") && strings.Contains(err.Error(), "directory") {
 			saveAlerts()
@@ -148,6 +142,9 @@ func LoadFilters() error {
 	}
 
 	err = json.Unmarshal(file, &Alerts)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -216,18 +213,13 @@ func RemoveAlert(user discordgo.User) error {
 
 func saveFilters() error {
 	FiltersJSON, err := json.MarshalIndent(Filters, "", " ")
-
-	// Return if there was an error marshaling Filters
 	if err != nil {
-		log.Println(err.Error())
+		log.Printf("Error marshaling filters: %v", err)
 		return err
 	}
-
 	err = ioutil.WriteFile(BinPath+filtersFile, FiltersJSON, 0644)
-
-	// Return if there was an error writing to json file
 	if err != nil {
-		log.Println(err.Error())
+		log.Printf("Error writing to json file: %v", err)
 		return err
 	}
 
@@ -236,18 +228,13 @@ func saveFilters() error {
 
 func saveAlerts() error {
 	AlertsJSON, err := json.MarshalIndent(Alerts, "", " ")
-
-	// Return if there was an error marshaling filters
 	if err != nil {
-		log.Println(err.Error())
+		log.Printf("Error marshaling alerts: %v", err)
 		return err
 	}
-
 	err = ioutil.WriteFile(BinPath+alertsFile, AlertsJSON, 0644)
-
-	// Return if there was an error writing to json file
 	if err != nil {
-		log.Println(err.Error())
+		log.Printf("Error writing to json file: %v", err)
 		return err
 	}
 

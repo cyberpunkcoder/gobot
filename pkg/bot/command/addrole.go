@@ -24,7 +24,7 @@ func init() {
 	executables = append(executables, &addRole)
 }
 
-func (a *addRole) execute(message *discordgo.MessageCreate, session *discordgo.Session) {
+func (a *addRole) execute(message *discordgo.MessageCreate, session *discordgo.Session) error {
 	author := message.Author.ID
 	channel := message.ChannelID
 
@@ -67,17 +67,15 @@ func (a *addRole) execute(message *discordgo.MessageCreate, session *discordgo.S
 				if strings.Contains(err.Error(), strconv.Itoa(discordgo.ErrCodeUnknownEmoji)) {
 					session.ChannelMessageDelete(channel, checkingMessage.ID)
 					session.ChannelMessageSend(message.ChannelID, "<@"+message.Author.ID+"> I don't have access to the emoji "+newEmoji.ToString()+" .")
-					return
 				}
-				log.Printf("Error adding reaction: %v", err)
-				return
+				return err
 			}
 			// Remove checking message
 			session.ChannelMessageDelete(checkingMessage.ChannelID, checkingMessage.ID)
 		} else {
 			// Wrong emoji format
 			session.ChannelMessageSend(channel, "<@"+author+"> "+a.wrongFormat())
-			return
+			return nil
 		}
 
 		catagory = strings.TrimLeft(catagory, " ")
@@ -98,8 +96,9 @@ func (a *addRole) execute(message *discordgo.MessageCreate, session *discordgo.S
 		output += newEmoji.ToString() + " - <@&" + role[1] + ">\n"
 
 		session.ChannelMessageSend(message.ChannelID, output)
-		return
+		return nil
 	}
 	// Wrong role format
 	session.ChannelMessageSend(channel, "<@"+author+"> "+a.wrongFormat())
+	return nil
 }

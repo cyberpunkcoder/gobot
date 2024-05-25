@@ -19,21 +19,21 @@ func init() {
 	executables = append(executables, &welcome)
 }
 
-func (h *welcome) execute(message *discordgo.MessageCreate, session *discordgo.Session) {
-	if config.WelcomeMessage != "" {
-		session.ChannelMessageDelete(message.ChannelID, message.ID)
-
-		mentionedMembers := message.Mentions
-
-		if len(mentionedMembers) == 0 {
-			session.ChannelMessageSend(message.ChannelID, config.WelcomeMessage)
-			return
-		}
-		// Send help to each mentioned member
-		for _, member := range mentionedMembers {
-			session.ChannelMessageSend(message.ChannelID, "<@"+member.ID+">, "+config.WelcomeMessage)
-		}
-		return
+func (h *welcome) execute(message *discordgo.MessageCreate, session *discordgo.Session) error {
+	if config.WelcomeMessage == "" {
+		session.ChannelMessageSend(message.ChannelID, "<@"+message.Author.ID+"> welcome message not set.")
+		return nil
 	}
-	session.ChannelMessageSend(message.ChannelID, "<@"+message.Author.ID+"> welcome message not set.")
+	session.ChannelMessageDelete(message.ChannelID, message.ID)
+
+	mentionedMembers := message.Mentions
+	// If no members mentioned, send welcome message to channel
+	if len(mentionedMembers) == 0 {
+		session.ChannelMessageSend(message.ChannelID, config.WelcomeMessage)
+	}
+	// Send welcome message to mentioned members
+	for _, member := range mentionedMembers {
+		session.ChannelMessageSend(message.ChannelID, "<@"+member.ID+">, "+config.WelcomeMessage)
+	}
+	return nil
 }
