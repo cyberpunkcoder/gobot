@@ -20,6 +20,8 @@ func ready(session *discordgo.Session, ready *discordgo.Ready) {
 
 // guildMemberAdd is called when a member joins the guild
 func guildMemberAdd(session *discordgo.Session, user *discordgo.GuildMemberAdd) {
+	log.Printf("User %s joined guild %s", user.User.ID, user.GuildID)
+
 	if config.JoinRole != "" {
 		// Give a member the join role
 		err := session.GuildMemberRoleAdd(user.GuildID, user.User.ID, config.JoinRole)
@@ -64,6 +66,8 @@ func messageCreate(session *discordgo.Session, message *discordgo.MessageCreate)
 
 // messageReactionAdd is called whenever a reaction has been added to a message
 func messageReactionAdd(session *discordgo.Session, reaction *discordgo.MessageReactionAdd) {
+	log.Printf("Reaction from %s in %s: %s", reaction.UserID, reaction.ChannelID, reaction.Emoji.ID)
+
 	botPermissions, err := session.State.UserChannelPermissions(session.State.User.ID, reaction.ChannelID)
 	if err != nil {
 		log.Printf("Error getting bot permissions: %v", err)
@@ -90,6 +94,8 @@ func messageReactionAdd(session *discordgo.Session, reaction *discordgo.MessageR
 
 // messageReactionAdd is called whenever a reaction has been removed from a message
 func messageReactionRemove(session *discordgo.Session, reaction *discordgo.MessageReactionRemove) {
+	log.Printf("Reaction from %s in %s: %s", reaction.UserID, reaction.ChannelID, reaction.Emoji.ID)
+
 	botPermissions, err := session.State.UserChannelPermissions(session.State.User.ID, reaction.ChannelID)
 	if err != nil {
 		log.Printf("Error getting bot permissions: %v", err)

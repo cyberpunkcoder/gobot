@@ -42,7 +42,7 @@ func (a *addFilterAlert) execute(message *discordgo.MessageCreate, session *disc
 	if err != nil {
 		session.ChannelMessageSend(channel, "<@"+author+"> you are already set to be alerted of filter violations.")
 		return err
-	} 
+	}
 	session.ChannelMessageSend(channel, "<@"+author+"> you will be alerted of filter violations.")
 	return nil
 }

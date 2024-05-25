@@ -1,6 +1,7 @@
 package command
 
 import (
+	"log"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -40,6 +41,7 @@ func Execute(message *discordgo.MessageCreate, session *discordgo.Session) error
 		if e.getName() != keyword {
 			continue
 		}
+
 		found = true
 		author := message.Author.ID
 		channel := message.ChannelID
@@ -102,6 +104,7 @@ func Execute(message *discordgo.MessageCreate, session *discordgo.Session) error
 			return nil
 		}
 
+		logCommandExecution(e, message, session)
 		return e.execute(message, session)
 	}
 
@@ -110,6 +113,26 @@ func Execute(message *discordgo.MessageCreate, session *discordgo.Session) error
 		session.ChannelMessageSend(message.ChannelID, "<@"+message.Author.ID+"> unknown command, try **!help**.")
 	}
 	return nil
+}
+
+func logCommandExecution(e executable, message *discordgo.MessageCreate, session *discordgo.Session) {
+	channel, err := session.State.Channel(message.ChannelID)
+	if err != nil {
+		log.Printf("Error retrieving channel: %v", err)
+		return
+	}
+
+	var mentionNames []string
+	for _, mention := range message.Mentions {
+		mentionNames = append(mentionNames, mention.Username)
+	}
+
+	log.Printf("Executing command: %s, author: %s, channel: %s, mentions: %v",
+		e.getName(),
+		message.Author.GlobalName,
+		channel.Name,
+		mentionNames,
+	)
 }
 
 func (c *command) getName() string {

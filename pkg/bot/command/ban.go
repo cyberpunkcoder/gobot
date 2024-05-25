@@ -21,7 +21,6 @@ func init() {
 }
 
 func (b *ban) execute(message *discordgo.MessageCreate, session *discordgo.Session) error {
-
 	author := message.Author.ID
 	mentionedMembers := message.Mentions
 	channel := message.ChannelID
