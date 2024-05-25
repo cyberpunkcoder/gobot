@@ -1,6 +1,6 @@
 /*
 Gobot, a robust expandable bot that interfaces with Discord go API!
-Copyright (C) 2020 github.com/cyberpunkcoder
+Copyright (C) 2024 github.com/cyberpunkcoder
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -37,14 +37,15 @@ var BinPath string
 
 func main() {
 	BinPath, err := filepath.Abs(filepath.Dir(os.Args[0]))
-
 	if err != nil {
-		log.Println(err)
-		return
+		log.Fatalf("Error getting binary path: %v", err)
 	}
 
 	// Create directory nstructure if it does not already exist
-	_ = os.MkdirAll(BinPath+"/json/role", 0777)
+	err = os.MkdirAll(BinPath+"/json/role", 0777)
+	if err != nil {
+		log.Fatalf("Error creating directory structure: %v", err)
+	}
 
 	// Set relative path to packages that access json files
 	config.BinPath = BinPath
@@ -54,48 +55,37 @@ func main() {
 
 	// Load configuration for bot and api
 	err = config.LoadConfig()
-
-	// Return if error loading config.json
 	if err != nil {
 		if strings.Contains(err.Error(), "no") && strings.Contains(err.Error(), "directory") {
 			fmt.Println("Configuration not found")
 			config.Create()
 		} else {
-			log.Println(err)
-			return
+			log.Fatalf("Error loading configuration: %v", err)
 		}
 	}
 
 	// Load roles assigned by reaction
 	err = reactionrole.LoadRoles()
-
-	// Return if error loading reactionrroles.json
 	if err != nil {
-		log.Println("Error loading reaction roles,", err)
+		log.Printf("Error loading reaction roles: %v", err)
 	}
 
 	// Load roles assigned by reaction
 	err = reactionrole.LoadMessages()
-
-	// Return if error loading reactionrroles.json
 	if err != nil {
-		log.Println("Error loading reaction role messages,", err)
+		log.Printf("Error loading reaction messages: %v", err)
 	}
 
 	// Load filters to be muted for
 	err = filter.LoadFilters()
-
-	// Return if error loading filters.json
 	if err != nil {
-		log.Println("Error loading filters,", err)
+		log.Printf("Error loading filters: %v", err)
 	}
 
 	// Load whitelists bot will ignore
 	err = whitelist.LoadWhitelists()
-
-	// Return if error loading whitelists.json
 	if err != nil {
-		log.Println("Error loading whitelists,", err)
+		log.Printf("Error loading whitelists: %v", err)
 	}
 
 	bot.Start()
