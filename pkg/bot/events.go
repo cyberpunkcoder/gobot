@@ -19,27 +19,33 @@ func ready(session *discordgo.Session, ready *discordgo.Ready) {
 }
 
 // guildMemberAdd is called when a member joins the guild
-func guildMemberAdd(session *discordgo.Session, user *discordgo.GuildMemberAdd) error {
+func guildMemberAdd(session *discordgo.Session, user *discordgo.GuildMemberAdd) {
 	if config.JoinRole != "" {
 		// Give a member the join role
-		session.GuildMemberRoleAdd(user.GuildID, user.User.ID, config.JoinRole)
+		err := session.GuildMemberRoleAdd(user.GuildID, user.User.ID, config.JoinRole)
+		if err != nil {
+			log.Printf("Error adding join role: %v", err)
+		}
 	}
 	if config.WelcomeMessage != "" {
 		// Send welcome message to new member
 		welcomeChannel, err := session.UserChannelCreate(user.User.ID)
 		if err != nil {
-			return err
+			log.Printf("Error creating user channel: %v", err)
+			return
 		}
-		session.ChannelMessageSend(welcomeChannel.ID, "<@"+user.User.ID+">, "+config.WelcomeMessage)
+		_, err = session.ChannelMessageSend(welcomeChannel.ID, "<@"+user.User.ID+">, "+config.WelcomeMessage)
+		if err != nil {
+			log.Printf("Error sending welcome message: %v", err)
+		}
 	}
-	return nil
 }
 
 // messageCreate is called whenever a message has been created
-func messageCreate(session *discordgo.Session, message *discordgo.MessageCreate) error {
+func messageCreate(session *discordgo.Session, message *discordgo.MessageCreate) {
 	// If message is from bot, ignore
 	if message.Author.ID == session.State.User.ID {
-		return nil
+		return
 	}
 	// Check if message is a bot command
 	if strings.HasPrefix(message.Content, config.CommandPrefix) {
@@ -47,26 +53,26 @@ func messageCreate(session *discordgo.Session, message *discordgo.MessageCreate)
 		if whitelist.Check(message.Content) {
 			err := command.Execute(message, session)
 			if err != nil {
-				return err
+				log.Printf("Error executing command: %v", err)
 			}
-			return nil
+			return
 		}
 	}
 	// Check if message violates filter
 	filter.Check(message, session)
-	return nil
 }
 
 // messageReactionAdd is called whenever a reaction has been added to a message
-func messageReactionAdd(session *discordgo.Session, reaction *discordgo.MessageReactionAdd) error {
+func messageReactionAdd(session *discordgo.Session, reaction *discordgo.MessageReactionAdd) {
 	botPermissions, err := session.State.UserChannelPermissions(session.State.User.ID, reaction.ChannelID)
 	if err != nil {
-		return err
+		log.Printf("Error getting bot permissions: %v", err)
+		return
 	}
 	// Return if bot does not have permission to manage roles
 	if botPermissions&discordgo.PermissionManageRoles == 0 {
 		session.ChannelMessage(reaction.ChannelID, "<@"+reaction.UserID+"> I don't have permission to manage roles.")
-		return nil
+		return
 	}
 	for _, reactionRoleMessage := range reactionrole.Messages {
 		if reaction.MessageID != reactionRoleMessage {
@@ -80,20 +86,20 @@ func messageReactionAdd(session *discordgo.Session, reaction *discordgo.MessageR
 			}
 		}
 	}
-	return nil
 }
 
 // messageReactionAdd is called whenever a reaction has been removed from a message
-func messageReactionRemove(session *discordgo.Session, reaction *discordgo.MessageReactionRemove) error {
+func messageReactionRemove(session *discordgo.Session, reaction *discordgo.MessageReactionRemove) {
 	botPermissions, err := session.State.UserChannelPermissions(session.State.User.ID, reaction.ChannelID)
 	if err != nil {
-		return err
+		log.Printf("Error getting bot permissions: %v", err)
+		return
 	}
 
 	// Return if bot does not have permission to manage roles
 	if botPermissions&discordgo.PermissionManageRoles == 0 {
 		session.ChannelMessage(reaction.ChannelID, "<@"+reaction.UserID+"> I don't have permission to manage roles.")
-		return nil
+		return
 	}
 
 	for _, reactionRoleMessage := range reactionrole.Messages {
@@ -108,5 +114,4 @@ func messageReactionRemove(session *discordgo.Session, reaction *discordgo.Messa
 			}
 		}
 	}
-	return nil
 }

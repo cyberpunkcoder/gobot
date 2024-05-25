@@ -11,7 +11,6 @@ import (
 
 // Start the Discord bot
 func Start() error {
-
 	// Create new bot session
 	dg, err := discordgo.New("Bot " + config.DiscordToken)
 	if err != nil {
