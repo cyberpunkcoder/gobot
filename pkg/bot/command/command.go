@@ -43,7 +43,6 @@ func Execute(message *discordgo.MessageCreate, session *discordgo.Session) {
 			channel := message.ChannelID
 
 			botPermissions, err := session.State.UserChannelPermissions(session.State.User.ID, channel)
-
 			if err != nil {
 				session.ChannelMessageSend(channel, "<@"+author+"> unable to check my permissions.")
 				return
@@ -70,7 +69,6 @@ func Execute(message *discordgo.MessageCreate, session *discordgo.Session) {
 			}
 
 			userPermissions, err := session.State.UserChannelPermissions(author, channel)
-
 			if err != nil {
 				session.ChannelMessageSend(channel, "<@"+author+"> unable to check your permissions.")
 				return

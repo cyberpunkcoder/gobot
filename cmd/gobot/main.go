@@ -40,8 +40,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error getting binary path: %v", err)
 	}
-
-	// Create directory nstructure if it does not already exist
+	// Create directory structure if it does not already exist
 	err = os.MkdirAll(BinPath+"/json/role", 0777)
 	if err != nil {
 		log.Fatalf("Error creating directory structure: %v", err)
@@ -69,19 +68,16 @@ func main() {
 	if err != nil {
 		log.Printf("Error loading reaction roles: %v", err)
 	}
-
 	// Load roles assigned by reaction
 	err = reactionrole.LoadMessages()
 	if err != nil {
 		log.Printf("Error loading reaction messages: %v", err)
 	}
-
 	// Load filters to be muted for
 	err = filter.LoadFilters()
 	if err != nil {
 		log.Printf("Error loading filters: %v", err)
 	}
-
 	// Load whitelists bot will ignore
 	err = whitelist.LoadWhitelists()
 	if err != nil {

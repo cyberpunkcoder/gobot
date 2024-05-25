@@ -31,7 +31,6 @@ func (a *addFilter) execute(message *discordgo.MessageCreate, session *discordgo
 
 	if strings.Contains(message.Content, " ") && text != "" {
 		err := filter.SaveFilter(text)
-
 		if err != nil {
 			// Return if filter already exists
 			session.ChannelMessageSend(channel, "<@"+author+"> filter already exists.")

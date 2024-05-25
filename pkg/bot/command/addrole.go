@@ -57,16 +57,19 @@ func (a *addRole) execute(message *discordgo.MessageCreate, session *discordgo.S
 
 			// Check if bot has access to custom emoji
 			emojiText := newEmoji.Name + ":" + newEmoji.ID
-			checkingMessage, _ := session.ChannelMessageSend(message.ChannelID, "<@"+message.Author.ID+"> checking access to emoji.")
-			err := session.MessageReactionAdd(checkingMessage.ChannelID, checkingMessage.ID, emojiText)
+			checkingMessage, err := session.ChannelMessageSend(message.ChannelID, "<@"+message.Author.ID+"> checking access to emoji.")
+			if err != nil {
+				log.Printf("Error sending message: %v", err)
+			}
 
+			err = session.MessageReactionAdd(checkingMessage.ChannelID, checkingMessage.ID, emojiText)
 			if err != nil {
 				if strings.Contains(err.Error(), strconv.Itoa(discordgo.ErrCodeUnknownEmoji)) {
 					session.ChannelMessageDelete(channel, checkingMessage.ID)
 					session.ChannelMessageSend(message.ChannelID, "<@"+message.Author.ID+"> I don't have access to the emoji "+newEmoji.ToString()+" .")
 					return
 				}
-				log.Println(err)
+				log.Printf("Error adding reaction: %v", err)
 				return
 			}
 			// Remove checking message

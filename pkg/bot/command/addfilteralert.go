@@ -38,10 +38,9 @@ func (a *addFilterAlert) execute(message *discordgo.MessageCreate, session *disc
 	}
 
 	err := filter.SaveAlert(*message.Author)
-
 	if err != nil {
 		session.ChannelMessageSend(channel, "<@"+author+"> you are already set to be alerted of filter violations.")
-	} else {
-		session.ChannelMessageSend(channel, "<@"+author+"> you will be alerted of filter violations.")
-	}
+		return
+	} 
+	session.ChannelMessageSend(channel, "<@"+author+"> you will be alerted of filter violations.")
 }
