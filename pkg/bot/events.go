@@ -62,7 +62,7 @@ func messageReactionAdd(session *discordgo.Session, reaction *discordgo.MessageR
 	}
 
 	// Return if bot does not have permission to manage roles
-	if botPermissions&discordgo.PermissionManageRoles == 0 {
+	if botPermissions & discordgo.PermissionManageRoles == 0 {
 		session.ChannelMessage(reaction.ChannelID, "<@"+reaction.UserID+"> I don't have permission to manage roles.")
 		return
 	}
@@ -93,7 +93,7 @@ func messageReactionRemove(session *discordgo.Session, reaction *discordgo.Messa
 	}
 
 	// Return if bot does not have permission to manage roles
-	if botPermissions&discordgo.PermissionManageRoles == 0 {
+	if botPermissions & discordgo.PermissionManageRoles == 0 {
 		session.ChannelMessage(reaction.ChannelID, "<@"+reaction.UserID+"> I don't have permission to manage roles.")
 		return
 	}

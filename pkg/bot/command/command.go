@@ -51,7 +51,7 @@ func Execute(message *discordgo.MessageCreate, session *discordgo.Session) {
 
 			var missingBotPermissions []int
 			for _, p := range e.getPermisssions() {
-				if botPermissions&p == 0 {
+				if botPermissions & int64(p) == 0 {
 					missingBotPermissions = append(missingBotPermissions, p)
 				}
 			}
@@ -78,7 +78,7 @@ func Execute(message *discordgo.MessageCreate, session *discordgo.Session) {
 
 			var missingUserPermissions []int
 			for _, p := range e.getPermisssions() {
-				if userPermissions&p == 0 {
+				if userPermissions & int64(p) == 0 {
 					missingUserPermissions = append(missingUserPermissions, p)
 				}
 			}

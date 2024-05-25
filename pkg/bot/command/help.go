@@ -46,7 +46,7 @@ func generateHelpFor(memberID string, channelID string, session *discordgo.Sessi
 	for _, executable := range executables {
 		avaliable := true
 		for _, permission := range executable.getPermisssions() {
-			if userPermissions&permission == 0 {
+			if userPermissions & int64(permission) == 0 {
 				avaliable = false
 				break
 			}
