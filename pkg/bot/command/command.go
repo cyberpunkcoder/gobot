@@ -30,7 +30,6 @@ type command struct {
 
 // Execute a command
 func Execute(message *discordgo.MessageCreate, session *discordgo.Session) error {
-
 	// Get keyword fom message text by removing CommandPrefix and everything after first space
 	keyword := strings.Replace(message.Content, config.CommandPrefix, "", -1)
 	keyword = strings.Split(keyword, " ")[0]
@@ -104,20 +103,20 @@ func Execute(message *discordgo.MessageCreate, session *discordgo.Session) error
 			return nil
 		}
 
-		logCommandExecution(e, message, session)
+		logCommandExecution(e.getName(), message, session)
 		return e.execute(message, session)
 	}
 
 	// If no matching command was found
 	if !found {
-		logCommandExecution(e, message, session)
-		log.Println("Unknown command")
+		logCommandExecution(keyword, message, session)
+		log.Println("Unknown command: " + keyword)
 		session.ChannelMessageSend(message.ChannelID, "<@"+message.Author.ID+"> unknown command, try **!help**.")
 	}
 	return nil
 }
 
-func logCommandExecution(e executable, message *discordgo.MessageCreate, session *discordgo.Session) {
+func logCommandExecution(name string, message *discordgo.MessageCreate, session *discordgo.Session) {
 	channel, err := session.State.Channel(message.ChannelID)
 	if err != nil {
 		log.Printf("Error retrieving channel: %v", err)
@@ -128,7 +127,7 @@ func logCommandExecution(e executable, message *discordgo.MessageCreate, session
 		mentionNames = append(mentionNames, displayName(mention))
 	}
 	log.Printf("Executing command: %s, author: %s, channel: %s, mentions: %v",
-		e.getName(),
+		name,
 		displayName(message.Author),
 		channel.Name,
 		mentionNames,
