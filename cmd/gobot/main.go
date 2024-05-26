@@ -84,10 +84,13 @@ func main() {
 		log.Printf("Error loading whitelists: %v", err)
 	}
 
-	err = bot.ServeHealthCheck()
-	if err != nil {
-		log.Fatalf("Error serving health check: %v", err)
-	}
+    // Start the health check server in a separate goroutine
+    go func() {
+        if err := bot.ServeHealthCheck(); err != nil {
+            log.Fatalf("Health check server failed: %v", err)
+        }
+    }()
+
 
 	err = bot.Start()
 	if err != nil {
