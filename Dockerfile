@@ -16,6 +16,9 @@ COPY . .
 # Build the Go app
 RUN go build -o /app/cmd/gobot/gobot ./cmd/gobot
 
+# Expose the port needed for health checks
+EXPOSE 8080
+
 # Set the working directory to where the executable and JSON files are located
 WORKDIR /app/cmd/gobot
 
