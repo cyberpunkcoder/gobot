@@ -84,5 +84,13 @@ func main() {
 		log.Printf("Error loading whitelists: %v", err)
 	}
 
-	bot.Start()
+	err = bot.ServeHealthCheck()
+	if err != nil {
+		log.Fatalf("Error serving health check: %v", err)
+	}
+
+	err = bot.Start()
+	if err != nil {
+		log.Fatalf("Error starting bot: %v", err)
+	}
 }

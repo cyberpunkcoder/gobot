@@ -1,6 +1,9 @@
 package bot
 
 import (
+	"fmt"
+	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -9,15 +12,18 @@ import (
 	"github.com/cyberpunkprogrammer/gobot/pkg/bot/config"
 )
 
+const healthCheckPort = 8080
+
 // Start the Discord bot
 func Start() error {
-	// Create new bot session
+	log.Println("Starting bot")
 	dg, err := discordgo.New("Bot " + config.DiscordToken)
 	if err != nil {
 		return err
 	}
 
-	// Sever events
+	log.Println("Serving events")
+	// Serve events
 	dg.AddHandler(ready)
 	dg.AddHandler(guildMemberAdd)
 	dg.AddHandler(messageCreate)
@@ -27,6 +33,7 @@ func Start() error {
 	// Gather all intents
 	dg.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAll)
 
+	log.Println("Opening bot session")
 	err = dg.Open()
 	if err != nil {
 		return err
@@ -41,4 +48,14 @@ func Start() error {
 	dg.Close()
 
 	return nil
+}
+
+func ServeHealthCheck() error {
+	log.Println("Serving health check")
+	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Health check served")
+		w.WriteHeader(http.StatusOK)
+	})
+
+	return http.ListenAndServe(fmt.Sprintf(":%d", healthCheckPort), nil)
 }

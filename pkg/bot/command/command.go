@@ -110,6 +110,8 @@ func Execute(message *discordgo.MessageCreate, session *discordgo.Session) error
 
 	// If no matching command was found
 	if !found {
+		logCommandExecution(e, message, session)
+		log.Println("Unknown command")
 		session.ChannelMessageSend(message.ChannelID, "<@"+message.Author.ID+"> unknown command, try **!help**.")
 	}
 	return nil
