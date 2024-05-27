@@ -55,6 +55,7 @@ func ServeHealthCheck() error {
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		log.Println("Health check served")
 		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("ok"))
 	})
 
 	return http.ListenAndServe(fmt.Sprintf(":%d", healthCheckPort), nil)
