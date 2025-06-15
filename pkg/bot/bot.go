@@ -12,7 +12,7 @@ import (
 	"github.com/cyberpunkprogrammer/gobot/pkg/bot/config"
 )
 
-const healthCheckPort = 8080
+const healthCheckPort = 8081
 
 // Start the Discord bot
 func Start() error {
